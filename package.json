@@ -1,0 +1,21 @@
+{
+  "name": "voice-compass-sdk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node bin/build.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "querystring": "^0.2.0"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.0",
+    "tsify": "^5.0.2",
+    "typescript": "^4.0.3",
+    "uglifyify": "^5.0.2"
+  }
+}
