@@ -1,7 +1,6 @@
 {
-  "name": "@voice-compass/ui",
+  "name": "@voice-compass/proto-risklimiter",
   "version": "0.1.0",
-  "main": "lib/index.js",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -25,6 +24,7 @@
   },
   "dependencies": {
     "sirv-cli": "^1.0.0",
-    "@voice-compass/core": "^0.1.0"
+    "@voice-compass/core": "^0.1.0",
+    "@voice-compass/ui": "^0.1.0"
   }
 }

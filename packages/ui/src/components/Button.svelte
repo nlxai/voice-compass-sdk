@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { RequestStatus } from "./utils";
-  import { none } from "./utils";
+  import type { RequestStatus } from "../utils";
+  import { none } from "../utils";
 
   export let disabled: boolean = false;
 

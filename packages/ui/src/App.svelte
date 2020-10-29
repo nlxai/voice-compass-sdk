@@ -1,10 +1,14 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
-  import { logic } from "./content";
-  import { isTextInput, isChoiceInput } from "./logic";
-  import type { Choice, ChoiceInput, StepInput } from "./logic";
-  import Button from "./Button.svelte";
+  import { isTextInput, isChoiceInput } from "./model";
+  import type { Choice, ChoiceInput, StepInput } from "./model";
+  import Button from "./components/Button.svelte";
   import { pending } from "./utils";
+
+  export let TextInput;
+  export let ChoiceInput;
+
+  export let logic = {};
 
   let stepId: string = "root";
   let state: Record<string, any> = {};
@@ -17,46 +21,6 @@
       const stateVal = state[key];
       return stateVal || val;
     });
-  };
-
-  const selectChoice = (choice: Choice, choiceInput: StepInput) => {
-    if (isChoiceInput(choiceInput)) {
-      if (choiceInput.set) {
-        state = {
-          ...state,
-          [choiceInput.set]: choice.value,
-        };
-      }
-      if (choiceInput.immediate) {
-        stepId = choice.next;
-      }
-    }
-  };
-
-  const continueChoice = (choiceInput: StepInput) => {
-    if (isChoiceInput(choiceInput)) {
-      const selected = choiceInput.choices.find(
-        (choice) => choice.value === state[choiceInput.set]
-      );
-      if (selected) {
-        stepId = selected.next;
-      }
-    }
-  };
-
-  const typeInInput = (textInput: StepInput) => (ev: any) => {
-    if (isTextInput(textInput)) {
-      state = {
-        ...state,
-        [textInput.set]: ev.target.value,
-      };
-    }
-  };
-
-  const continueText = (textInput: StepInput) => {
-    if (isTextInput(textInput)) {
-      stepId = textInput.next;
-    }
   };
 </script>
 
@@ -95,41 +59,22 @@
             </div>
             {#if step.input}
               {#if isTextInput(step.input)}
-                <div class="space-y-4">
-                  <input
-                    class="block w-full p-1 border border-gray-300 rounded"
-                    value={state[step.input.set] || ''}
-                    on:input={typeInInput(step.input)} />
-                  <Button
-                    on:click={() => {
-                      continueText(step.input);
-                    }}>
-                    Continue
-                  </Button>
-                </div>
+                <svelte:component
+                  this={TextInput}
+                  bind:state
+                  input={step.input}
+                  on:next={(ev) => {
+                    stepId = ev.detail;
+                  }} />
               {/if}
               {#if isChoiceInput(step.input)}
-                <ul class="space-y-4">
-                  {#each step.input.choices as choice}
-                    <li
-                      on:click={() => {
-                        selectChoice(choice, step.input);
-                      }}
-                      class="p-2 border border-transparent rounded shadow cursor-pointer hover:bg-gray-100"
-                      class:border-green-600={state[step.input.set] === choice.value}>
-                      {choice.label}
-                    </li>
-                  {/each}
-                </ul>
-                {#if isChoiceInput(step.input) && !step.input.immediate}
-                  <Button
-                    disabled={!state[step.input.set]}
-                    on:click={() => {
-                      continueChoice(step.input);
-                    }}>
-                    Continue
-                  </Button>
-                {/if}
+                <svelte:component
+                  this={ChoiceInput}
+                  bind:state
+                  input={step.input}
+                  on:next={(ev) => {
+                    stepId = ev.detail;
+                  }} />
               {/if}
             {/if}
           </div>

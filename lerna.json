@@ -2,7 +2,8 @@
   "packages": [
     "packages/core",
     "packages/standalone",
-    "packages/ui"
+    "packages/ui",
+    "packages/proto-risklimiter"
   ],
   "version": "0.1.0"
 }
