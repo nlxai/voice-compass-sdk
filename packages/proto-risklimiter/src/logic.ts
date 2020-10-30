@@ -1,9 +1,16 @@
-import type { Step } from "./logic";
-import { isValidEmail } from "./utils";
+import type { Logic } from "@voice-compass/logic";
+import { isValidEmail } from "@voice-compass/logic";
 
 const journeyId = "abcd";
 
-export const logic: Record<string, Step> = {
+const wait = (timeout) =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, timeout);
+  });
+
+export const logic: Logic = {
   root: {
     title: "Support",
     body: "What can I assist you with?",
@@ -18,7 +25,7 @@ export const logic: Record<string, Step> = {
         {
           label: "Buttons",
           value: "buttons",
-          next: "location-name",
+          next: () => wait(500).then(() => Promise.resolve("location-name")),
           $select: {
             stepId: "cb023f0f-cbf8-4ec4-a884-753ffd616fba",
             journeyId,
@@ -110,7 +117,7 @@ export const logic: Record<string, Step> = {
         stepId: "a17eee61-8f39-4f8d-bf9b-e132f76e3e8d",
         journeyId,
       },
-      next: "location-id",
+      next: () => wait(800).then(() => Promise.resolve("location-id")),
     },
   },
   "location-id": {

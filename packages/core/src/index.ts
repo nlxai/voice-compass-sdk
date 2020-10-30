@@ -4,9 +4,10 @@ import axios from "axios";
 interface Config {
   apiKey: string;
   botId: string;
+  journeyId?: string;
 }
 
-interface VoiceCompass {
+export interface VoiceCompass {
   updateStep: (data: StepData) => void;
 }
 
@@ -119,7 +120,7 @@ export const create = (config: Config): VoiceCompass => {
         escalate: stepData.escalate,
         payload: stepData.payload,
         botId: config.botId,
-        journeyId: stepData.journeyId,
+        journeyId: stepData.journeyId || config.journeyId,
         language: info.voice,
       })
       .then(() => {

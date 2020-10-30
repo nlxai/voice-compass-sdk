@@ -1,6 +1,7 @@
 {
-  "name": "@voice-compass/proto-risklimiter",
+  "name": "@voice-compass/ui",
   "version": "0.1.0",
+  "main": "lib/index.js",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -10,6 +11,8 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-node-resolve": "^8.0.0",
+    "@rollup/plugin-typescript": "^6.0.0",
+    "@tsconfig/svelte": "^1.0.0",
     "rollup": "^2.3.4",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-svelte": "^6.0.0",
@@ -17,14 +20,13 @@
     "svelte": "^3.0.0",
     "svelte-check": "^1.0.0",
     "svelte-preprocess": "^4.0.0",
-    "@rollup/plugin-typescript": "^6.0.0",
-    "typescript": "^3.9.3",
+    "tailwindcss": "^1.9.6",
     "tslib": "^2.0.0",
-    "@tsconfig/svelte": "^1.0.0"
+    "typescript": "^3.9.3"
   },
   "dependencies": {
     "sirv-cli": "^1.0.0",
     "@voice-compass/core": "^0.1.0",
-    "@voice-compass/ui": "^0.1.0"
+    "@voice-compass/logic": "^0.1.0"
   }
 }

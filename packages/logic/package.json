@@ -1,5 +1,5 @@
 {
-  "name": "@voice-compass/core",
+  "name": "@voice-compass/logic",
   "version": "0.1.0",
   "description": "",
   "main": "lib/index.js",
@@ -7,11 +7,10 @@
   "scripts": {
     "build": "tsc"
   },
-  "author": "",
+  "author": "Peter Szerzo <peter@nlx.ai>",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.0",
-    "querystring": "^0.2.0"
+    "svelte": "^3.29.4"
   },
   "devDependencies": {
     "typescript": "^4.0.5"

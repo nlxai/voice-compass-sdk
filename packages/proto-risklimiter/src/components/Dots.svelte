@@ -1,16 +1,3 @@
-<script lang="ts">
-  import type { RequestStatus } from "../utils";
-  import { none } from "../utils";
-
-  export let disabled: boolean = false;
-
-  export let status: RequestStatus = none;
-
-  $: disabled_ = disabled || status.type === "pending";
-  $: pending_ = status.type === "pending";
-  $: error_ = status.type === "error" ? status.payload : undefined;
-</script>
-
 <style>
   .dots {
     position: absolute;
@@ -30,7 +17,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: #fff;
+    background-color: currentColor;
     animation: bounce 1s infinite ease-in-out;
   }
 
@@ -65,16 +52,8 @@
   }
 </style>
 
-<button
-  on:click
-  class="relative inline-block w-full px-3 py-3 tracking-wider text-white uppercase bg-blue-600 border-none rounded transition duration-500 hover:bg-blue-700"
-  class:opacity-50={disabled_}>
-  <slot />
-  {#if pending_}
-    <div class="dots">
-      <div class="dot" />
-      <div class="dot" />
-      <div class="dot" />
-    </div>
-  {/if}
-</button>
+<div class="dots">
+  <div class="dot" />
+  <div class="dot" />
+  <div class="dot" />
+</div>

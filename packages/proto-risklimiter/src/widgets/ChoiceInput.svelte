@@ -1,19 +1,37 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
+  import type { VoiceCompass } from "@voice-compass/core";
   import Button from "../components/Button.svelte";
-  import type { ChoiceInput } from "../logic";
+  import type { ChoiceInput, Choice, RequestStatus, Next } from "@voice-compass/logic";
+  import { pending, none, isNextPromise } from "@voice-compass/logic";
+
+  const dispatch = createEventDispatcher();
 
   export let input: ChoiceInput;
-
+  export let voiceCompass: VoiceCompass;
   export let state = {};
+
+  let requestStatus: RequestStatus = none;
 
   $: selectedChoice = input.choices.find(
     (choice) => choice.value === state[input.set]
   );
 
-  const dispatch = createEventDispatcher();
+  const handleNext = (next: Next) => {
+    if (isNextPromise(next)) {
+      requestStatus = pending;
+      next(state).then((stepId) => {
+        dispatch("next", stepId);
+      });
+    } else {
+      dispatch("next", next);
+    }
+  }
 
   const selectChoice = (choice: Choice) => {
+    if (choice.$select) {
+      voiceCompass.updateStep(choice.$select);
+    }
     if (input.set) {
       state = {
         ...state,
@@ -21,13 +39,13 @@
       };
     }
     if (input.immediate) {
-      dispatch("next", choice.next);
+      handleNext(choice.next);
     }
   };
 
   const handleButtonClick = () => {
     if (selectedChoice) {
-      dispatch("next", selectedChoice.next);
+      handleNext(selectedChoice.next);
     }
   };
 </script>
@@ -45,7 +63,7 @@
   {/each}
 </ul>
 {#if !input.immediate}
-  <Button disabled={!state[input.set]} on:click={handleButtonClick}>
+  <Button disabled={!state[input.set]} on:click={handleButtonClick} requestStatus={requestStatus}>
     Continue
   </Button>
 {/if}

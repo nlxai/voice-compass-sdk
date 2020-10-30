@@ -1,50 +1,29 @@
 <script lang="ts">
+  import type { SvelteComponent } from "svelte";
   import { fade } from "svelte/transition";
-  import { isTextInput, isChoiceInput } from "./model";
-  import type { Choice, ChoiceInput, StepInput } from "./model";
-  import Button from "./components/Button.svelte";
-  import { pending } from "./utils";
+  import type { VoiceCompass } from "@voice-compass/core";
+  import { isTextInput, isChoiceInput, interpolate } from "@voice-compass/logic";
+  import type { State, Logic } from "@voice-compass/logic";
 
-  export let TextInput;
-  export let ChoiceInput;
+  export let TextInput: SvelteComponent;
+  export let ChoiceInput: SvelteComponent;
 
-  export let logic = {};
+  export let voiceCompass: VoiceCompass;
+
+  export let logic: Logic = {};
 
   let stepId: string = "root";
-  let state: Record<string, any> = {};
+  let state: State = {};
 
   $: step = logic[stepId];
-
-  const interpolate = (str: string): string => {
-    return str.replace(/{(.*?)}/g, (val: string) => {
-      const key = val.slice(1, -1);
-      const stateVal = state[key];
-      return stateVal || val;
-    });
-  };
 </script>
 
-<style>
-  main {
-    padding: 1em;
-    max-width: 240px;
-    margin: 0 auto;
-  }
-
-  .selected {
-    border: 1px solid black;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  @media (min-width: 640px) {
-    main {
-      max-width: none;
-    }
-  }
+<style global lang="postcss">
+  /* purgecss start ignore */
+  @tailwind base;
+  @tailwind components;
+  /* purgecss end ignore */
+  @tailwind utilities;
 </style>
 
 <main>
@@ -55,13 +34,14 @@
           <div class="absolute left-0 right-0 space-y-4" transition:fade>
             <div class="text-center space-y-2">
               <h1 class="text-4xl font-bold">{step.title}</h1>
-              <p>{interpolate(step.body)}</p>
+              <p>{interpolate(step.body, state, logic)}</p>
             </div>
             {#if step.input}
               {#if isTextInput(step.input)}
                 <svelte:component
                   this={TextInput}
                   bind:state
+                  voiceCompass={voiceCompass}
                   input={step.input}
                   on:next={(ev) => {
                     stepId = ev.detail;
@@ -71,6 +51,7 @@
                 <svelte:component
                   this={ChoiceInput}
                   bind:state
+                  voiceCompass={voiceCompass}
                   input={step.input}
                   on:next={(ev) => {
                     stepId = ev.detail;
