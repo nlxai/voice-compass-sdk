@@ -3,7 +3,7 @@
     "packages/core",
     "packages/standalone",
     "packages/logic",
-    "packages/proto-risklimiter"
+    "packages/ui-template"
   ],
   "version": "0.1.0"
 }
