@@ -17,5 +17,8 @@
     "@rollup/plugin-node-resolve": "^10.0.0",
     "rollup": "^2.32.1"
   },
-  "gitHead": "4d7287d0932a76d2d0a3e7efabbd1d9b35f8e3ba"
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "5f271388fc34b4921e3f7e8ac2197c4c8ce07015"
 }
