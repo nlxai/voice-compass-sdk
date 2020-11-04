@@ -1,5 +1,5 @@
 {
-  "name": "@voice-compass/core",
+  "name": "@nlx-voice-compass/core",
   "version": "0.1.0",
   "description": "",
   "main": "lib/index.js",
@@ -19,5 +19,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "4d7287d0932a76d2d0a3e7efabbd1d9b35f8e3ba"
 }

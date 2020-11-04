@@ -1,5 +1,5 @@
 {
-  "name": "@voice-compass/ui-template",
+  "name": "@nlx-voice-compass/ui-template",
   "version": "0.1.0",
   "main": "lib/index.js",
   "private": true,
