@@ -15,7 +15,7 @@ const apiUrl = "https://api.voicecompass.ai/v1";
 
 interface StepData {
   stepId: string;
-  voice: string;
+  voice?: string;
   journeyId?: string;
   end?: boolean;
   escalate?: boolean;
