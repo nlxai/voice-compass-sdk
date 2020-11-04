@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublish": "npm run build"
   },
   "author": "",
   "license": "ISC",
@@ -15,5 +16,8 @@
   },
   "devDependencies": {
     "typescript": "^4.0.5"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,7 +1,8 @@
 {
-  "name": "@voice-compass/ui",
+  "name": "@voice-compass/ui-template",
   "version": "0.1.0",
   "main": "lib/index.js",
+  "private": true,
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",

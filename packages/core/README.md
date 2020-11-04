@@ -3,11 +3,12 @@
 ## Usage
 
 ```js
-import { create } from "@voice-compass/core";
+import { create } from "@nlx-voice-compass/core";
 
 const c = voiceCompass.create({
   apiKey: "",
-  botId: ""
+  botId: "",
+  contactId: ""
 });
 
 c.updateStep({
@@ -17,3 +18,7 @@ c.updateStep({
 ```
 
 See `src/index.ts` for all available options for the `updateStep` method.
+
+## License
+
+MIT.
