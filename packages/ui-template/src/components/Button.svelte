@@ -1,25 +1,36 @@
 <script lang="ts">
-  import type { RequestStatus } from "@voice-compass/logic";
-  import { none } from "@voice-compass/logic";
-  import Dots from "./Dots.svelte";
+  import { tw } from "twind";
+  import type { Status } from "./Button";
+  import { StatusType } from "./Button";
+  import LoaderDots from "./Internal/LoaderDots.svelte";
 
-  export let disabled: boolean = false;
+  export let status: Status = { type: StatusType.Active };
 
-  export let requestStatus: RequestStatus = none;
+  $: showContent = status.type !== StatusType.Pending;
 
-  $: disabled_ = disabled || requestStatus.type === "pending";
-  $: pending_ = requestStatus.type === "pending";
-  $: error_ = requestStatus.type === "error" ? requestStatus.payload : undefined;
+  $: disabled =
+    status.type === StatusType.Pending || status.type === StatusType.Disabled;
 </script>
+
+<style>
+  .dots-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+  }
+</style>
 
 <button
   on:click
-  class="relative inline-block w-full px-3 py-3 text-white bg-blue-600 border-none rounded transition duration-500 hover:bg-blue-700"
-  class:opacity-50={disabled_}>
-  <span class="tracking-wider uppercase" class:opacity-0={pending_}>
-    <slot />
-  </span>
-  {#if pending_}
-    <Dots />
+  class={tw('px-8', 'py-2', 'relative', 'rounded', 'block', 'w-full', 'max-w-sm', 'mx-auto', 'uppercase', 'tracking-wider', 'bg-brand', 'text-white', disabled ? 'opacity-50 cursor-auto' : 'opacity-1 hover:bg-brandLighter')}
+  {disabled}>
+  {#if status.type === StatusType.Pending}
+    <div class="dots-container">
+      <LoaderDots />
+    </div>
   {/if}
+  <div class={tw(showContent ? 'opacity-1' : 'opacity-0')}>
+    <slot />
+  </div>
 </button>

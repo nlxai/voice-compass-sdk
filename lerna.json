@@ -2,7 +2,6 @@
   "packages": [
     "packages/core",
     "packages/standalone",
-    "packages/logic",
     "packages/ui-template"
   ],
   "version": "0.1.3"

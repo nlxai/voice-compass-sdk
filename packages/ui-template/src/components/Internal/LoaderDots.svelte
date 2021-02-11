@@ -1,12 +1,8 @@
 <style>
   .dots {
-    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-50%, -50%, 0);
   }
 
   .dots > * + * {

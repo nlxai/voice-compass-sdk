@@ -9,6 +9,8 @@ interface Config {
 
 export interface VoiceCompass {
   updateStep: (data: StepData) => void;
+  trackDomAnnotations: () => void;
+  stopTrackingDomAnnotations: () => void;
 }
 
 const apiUrl = "https://api.voicecompass.ai/v1";
@@ -51,5 +53,35 @@ export const create = (config: Config): VoiceCompass => {
       });
   };
 
-  return { updateStep };
+  const handleGlobalClick = (ev: any) => {
+    let node = ev.target;
+    while (node && node !== document.body) {
+      if (node.getAttribute) {
+        const stepId = node.getAttribute("vc-click-step");
+        const journeyIdFromAttr = node.getAttribute("vc-click-journey");
+        const escalate = node.hasAttribute("vc-click-escalate");
+        const end = node.hasAttribute("vc-click-end");
+        const journeyId = journeyIdFromAttr || config.journeyId;
+        if (stepId) {
+          updateStep({
+            stepId,
+            journeyId,
+            escalate,
+            end,
+          });
+        }
+      }
+      node = node.parent;
+    }
+  };
+
+  return {
+    updateStep,
+    trackDomAnnotations: () => {
+      document.addEventListener("click", handleGlobalClick);
+    },
+    stopTrackingDomAnnotations: () => {
+      document.removeEventListener("click", handleGlobalClick);
+    },
+  };
 };

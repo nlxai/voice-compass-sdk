@@ -1,1 +1,1 @@
-export { create } from "@voice-compass/core";
+export { create } from "@nlx-voice-compass/core";
