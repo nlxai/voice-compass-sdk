@@ -17,6 +17,9 @@
     "svelte-feather-icons": "^3.3.0",
     "twind": "^0.14.6"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
