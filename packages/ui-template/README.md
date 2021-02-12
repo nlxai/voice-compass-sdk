@@ -14,4 +14,8 @@ Create a new Voice Compass experience using [degit](https://github.com/Rich-Harr
 
 `npm install -g degit`
 
-`degit nlxai/vc-template`
+`degit nlxai/voice-compass-sdk/packages/ui-template`
+
+## License
+
+MIT.

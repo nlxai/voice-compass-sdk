@@ -15,6 +15,15 @@ export interface VoiceCompass {
 
 const apiUrl = "https://api.voicecompass.ai/v1";
 
+const safeJsonParse = (value: any): any => {
+  try {
+    const json = JSON.parse(String(value));
+    return json;
+  } catch (err) {
+    return null;
+  }
+};
+
 interface StepData {
   stepId: string;
   voice?: string;
@@ -23,6 +32,27 @@ interface StepData {
   escalate?: boolean;
   payload?: object;
 }
+
+const isDomElement = (node: any): node is HTMLElement => {
+  return node instanceof HTMLElement;
+};
+
+const isInputElement = (node: any): node is HTMLInputElement => {
+  return node instanceof HTMLInputElement;
+};
+
+const inputValidationError = (inputNode: HTMLInputElement): null | string => {
+  const value = inputNode.value;
+  const type = inputNode.type;
+  if (type === "email") {
+    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+      value
+    )
+      ? null
+      : "Must be a valid email";
+  }
+  return null;
+};
 
 export const create = (config: Config): VoiceCompass => {
   const client = axios.create({
@@ -56,11 +86,12 @@ export const create = (config: Config): VoiceCompass => {
   const handleGlobalClick = (ev: any) => {
     let node = ev.target;
     while (node && node !== document.body) {
-      if (node.getAttribute) {
+      if (isDomElement(node)) {
         const stepId = node.getAttribute("vc-click-step");
         const journeyIdFromAttr = node.getAttribute("vc-click-journey");
         const escalate = node.hasAttribute("vc-click-escalate");
         const end = node.hasAttribute("vc-click-end");
+        const payload = safeJsonParse(node.getAttribute("vc-click-payload"));
         const journeyId = journeyIdFromAttr || config.journeyId;
         if (stepId) {
           updateStep({
@@ -68,7 +99,36 @@ export const create = (config: Config): VoiceCompass => {
             journeyId,
             escalate,
             end,
+            payload,
           });
+        }
+      }
+      node = node.parent;
+    }
+  };
+
+  const handleGlobalBlur = (ev: any) => {
+    let node = ev.target;
+    while (node && node !== document.body) {
+      if (isInputElement(node) && node.tagName === "INPUT") {
+        const validationError = inputValidationError(node);
+        if (validationError) {
+          const stepId = node.getAttribute("vc-invalid-step");
+          const journeyIdFromAttr = node.getAttribute("vc-invalid-journey");
+          const escalate = node.hasAttribute("vc-invalid-escalate");
+          const end = node.hasAttribute("vc-invalid-end");
+          const payload =
+            safeJsonParse(node.getAttribute("vc-invalid-payload")) || {};
+          const journeyId = journeyIdFromAttr || config.journeyId;
+          if (stepId) {
+            updateStep({
+              stepId,
+              journeyId,
+              escalate,
+              end,
+              payload,
+            });
+          }
         }
       }
       node = node.parent;
@@ -79,9 +139,12 @@ export const create = (config: Config): VoiceCompass => {
     updateStep,
     trackDomAnnotations: () => {
       document.addEventListener("click", handleGlobalClick);
+      // The 'blur' even does not bubble, hence 'focusout'
+      document.addEventListener("focusout", handleGlobalBlur);
     },
     stopTrackingDomAnnotations: () => {
       document.removeEventListener("click", handleGlobalClick);
+      document.removeEventListener("focusout", handleGlobalBlur);
     },
   };
 };
