@@ -54,6 +54,20 @@ const inputValidationError = (inputNode: HTMLInputElement): null | string => {
   return null;
 };
 
+const readVcAttributes = (node: HTMLElement, eventType: string) => {
+  const stepId = node.getAttribute(`vc-${eventType}-stepid`);
+  if (!stepId) {
+    return null;
+  }
+  return {
+    stepId,
+    journeyId: node.getAttribute(`vc-${eventType}-journeyid`),
+    escalate: node.hasAttribute(`vc-${eventType}-escalate`),
+    end: node.hasAttribute(`vc-${eventType}-end`),
+    payload: safeJsonParse(node.getAttribute(`vc-${eventType}-payload`)) || {},
+  };
+};
+
 export const create = (config: Config): VoiceCompass => {
   const client = axios.create({
     baseURL: apiUrl,
@@ -87,19 +101,11 @@ export const create = (config: Config): VoiceCompass => {
     let node = ev.target;
     while (node && node !== document.body) {
       if (isDomElement(node)) {
-        const stepId = node.getAttribute("vc-click-step");
-        const journeyIdFromAttr = node.getAttribute("vc-click-journey");
-        const escalate = node.hasAttribute("vc-click-escalate");
-        const end = node.hasAttribute("vc-click-end");
-        const payload = safeJsonParse(node.getAttribute("vc-click-payload"));
-        const journeyId = journeyIdFromAttr || config.journeyId;
-        if (stepId) {
+        const vcAttributes = readVcAttributes(node, "click");
+        if (vcAttributes) {
           updateStep({
-            stepId,
-            journeyId,
-            escalate,
-            end,
-            payload,
+            ...vcAttributes,
+            journeyId: vcAttributes.journeyId || config.journeyId,
           });
         }
       }
@@ -110,23 +116,14 @@ export const create = (config: Config): VoiceCompass => {
   const handleGlobalBlur = (ev: any) => {
     let node = ev.target;
     while (node && node !== document.body) {
-      if (isInputElement(node) && node.tagName === "INPUT") {
+      if (isInputElement(node)) {
         const validationError = inputValidationError(node);
         if (validationError) {
-          const stepId = node.getAttribute("vc-invalid-step");
-          const journeyIdFromAttr = node.getAttribute("vc-invalid-journey");
-          const escalate = node.hasAttribute("vc-invalid-escalate");
-          const end = node.hasAttribute("vc-invalid-end");
-          const payload =
-            safeJsonParse(node.getAttribute("vc-invalid-payload")) || {};
-          const journeyId = journeyIdFromAttr || config.journeyId;
-          if (stepId) {
+          const vcAttributes = readVcAttributes(node, "invalid");
+          if (vcAttributes) {
             updateStep({
-              stepId,
-              journeyId,
-              escalate,
-              end,
-              payload,
+              ...vcAttributes,
+              journeyId: vcAttributes.journeyId || config.journeyId,
             });
           }
         }

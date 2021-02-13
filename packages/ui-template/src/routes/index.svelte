@@ -100,12 +100,12 @@
         <Loader />
         <button
           class={tw`bg-brand hover:bg-brandLighter text-white px-2 py-1 rounded`}
-          vc-click-step="1234-abcd"
+          vc-click-stepid="1234-abcd"
           vc-click-escalate>Click me</button>
         <input
           class={tw`border border-gray-200 p-2`}
           type="email"
-          vc-invalid-step="abcd-1234"
+          vc-invalid-stepid="abcd-1234"
           vc-invalid-payload={JSON.stringify({ key: 'value' })} />
         {#if false}
           <CapturePhoto />
