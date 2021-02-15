@@ -29,6 +29,7 @@ const compass = create({
   botId: "",
   contactId: "",
   journeyId: "MyJourney",
+  language: "en-us",
   voice: "male-en-us"
 });
 
