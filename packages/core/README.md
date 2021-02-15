@@ -4,13 +4,26 @@ Framework-agnostic core SDK managing the web frontend of a Voice Compass journey
 
 ## Installation
 
+If you are bundling your JavaScript, you can get the package from `npm`:
+
 `npm install @nlx-voice-compass/core`
+
+Alternatively, you can get a standalone script:
+
+```html
+<script src="https://unpkg.com/@nlx-voice-compass/standalone/lib/index.js"></script>
+<script>
+  // All named exports from the package are now included in the `voiceCompass` global
+  console.log(window.voiceCompass);
+</script>
+```
 
 ## Basic Usage
 
 ```js
 import { create } from "@nlx-voice-compass/core";
 
+// Create journey manager object
 const compass = create({
   apiKey: "",
   botId: "",
@@ -18,13 +31,12 @@ const compass = create({
   journeyId: "MyJourney"
 });
 
+// Update a journey step
 compass.updateStep({
   stepId: "abcd-1234-efgh-5678",
   journeyId: "MyOtherJourney"
 });
 ```
-
-See `src/index.ts` for all available options for the `updateStep` method.
 
 ## API
 
@@ -110,6 +122,10 @@ const JourneyManager = () => {
   );
 }
 ```
+
+## TypeScript
+
+This SDK is written in TypeScript and include type definitions.
 
 ## License
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// Initial configuration used when creating a journey manager
 interface Config {
   apiKey: string;
   botId: string;
@@ -7,10 +8,20 @@ interface Config {
   contactId: string;
 }
 
+// The journey manager object
 export interface VoiceCompass {
   updateStep: (data: StepData) => void;
   trackDomAnnotations: () => void;
   stopTrackingDomAnnotations: () => void;
+}
+
+interface StepData {
+  stepId: string;
+  voice?: string;
+  journeyId?: string;
+  end?: boolean;
+  escalate?: boolean;
+  payload?: object;
 }
 
 const apiUrl = "https://api.voicecompass.ai/v1";
@@ -23,15 +34,6 @@ const safeJsonParse = (value: any): any => {
     return null;
   }
 };
-
-interface StepData {
-  stepId: string;
-  voice?: string;
-  journeyId?: string;
-  end?: boolean;
-  escalate?: boolean;
-  payload?: object;
-}
 
 const isDomElement = (node: any): node is HTMLElement => {
   return node instanceof HTMLElement;
@@ -50,6 +52,11 @@ const inputValidationError = (inputNode: HTMLInputElement): null | string => {
     )
       ? null
       : "Must be a valid email";
+  }
+  if (inputNode.pattern) {
+    return new RegExp(inputNode.pattern).test(value)
+      ? null
+      : "Must match pattern";
   }
   return null;
 };
@@ -132,16 +139,38 @@ export const create = (config: Config): VoiceCompass => {
     }
   };
 
+  const handleGlobalFocus = (ev: any) => {
+    let node = ev.target;
+    while (node && node !== document.body) {
+      if (isInputElement(node)) {
+        const validationError = inputValidationError(node);
+        if (validationError) {
+          const vcAttributes = readVcAttributes(node, "focus");
+          if (vcAttributes) {
+            updateStep({
+              ...vcAttributes,
+              journeyId: vcAttributes.journeyId || config.journeyId,
+            });
+          }
+        }
+      }
+      node = node.parent;
+    }
+  };
+
   return {
     updateStep,
     trackDomAnnotations: () => {
       document.addEventListener("click", handleGlobalClick);
       // The 'blur' even does not bubble, hence 'focusout'
       document.addEventListener("focusout", handleGlobalBlur);
+      // The 'focus' even does not bubble, hence 'focusin'
+      document.addEventListener("focusin", handleGlobalFocus);
     },
     stopTrackingDomAnnotations: () => {
       document.removeEventListener("click", handleGlobalClick);
       document.removeEventListener("focusout", handleGlobalBlur);
+      document.removeEventListener("focusin", handleGlobalFocus);
     },
   };
 };
