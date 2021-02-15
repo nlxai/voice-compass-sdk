@@ -85,10 +85,22 @@ These attributes control how the Voice Compass agent should react to an invalid 
 Invalidity is determined holistically based on type and validation attributes set on the field. For instance, the following markup:
 
 ```html
+<!-- Email addresse: step triggers if the supplied email is invalid and the field loses focus -->
 <input type="email" vc-invalid-step="MY_INVALID_STEP" />
+
+<!-- URL's validated with regex: step triggers if the supplied URL is invalid and the field loses focus -->
+<input pattern="https?://.+" vc-invalid-step="MY_INVALID_STEP" />
 ```
 
-Will trigger the new step if the user loses focus on this field without supplying a valid email address.
+#### Focus on form fields
+
+These attributes control how the Voice Compass agent should react to an invalid form field, when said form field loses focus.
+
+* `vc-focus-stepid`: the step ID triggered when focusing a form field.
+* `vc-focus-journeyid`: the journey ID triggered when focusing a form field.
+* `vc-focus-escalate`: boolean attribute set when focusing a form field should escalate a journey.
+* `vc-focus-end`: boolean attribute set when focusing a form field should end a journey.
+* `vc-focus-payload`: a stringified object containing the payload at this step.
 
 ### `stopTrackingDomAnnotations`
 

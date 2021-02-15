@@ -1,7 +1,10 @@
 # Voice Compass SDK
 
-## Standalone Usage
+Core SDK and supporting packages to create Voice Compass Journeys:
 
-`cd packages/standalone && npm run build`
+* [@nlx-voice-compass/core](https://www.npmjs.com/package/@nlx-voice-compass/core): headless core SDK for handling journeys.
+* [@nlx-voice-compass/ui-template](https://www.npmjs.com/package/@nlx-voice-compass/ui-template): UI template for journeys.
 
-Find your file under `packages/standalone/lib/index.js`.
+## LICENSE
+
+MIT.
