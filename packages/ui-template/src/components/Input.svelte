@@ -52,18 +52,16 @@
   })();
 </script>
 
-<div class={tw``}>
-  <label class={tw`space-y-1`}>
-    {#if label}
-      <p class={tw`uppercase tracking-wider text-sm`}>{label}</p>
-    {/if}
-    <input
-      class={tw`block w-full border border-gray-200 rounded px-2 py-1 text-base`}
-      bind:this={inputRef}
-      on:focus
-      on:blur
-      {...inputProps}
-      {placeholder}
-      bind:value />
-  </label>
-</div>
+<label class={tw`space-y-1`}>
+  {#if label}
+    <p class={tw`uppercase tracking-wider text-sm`}>{label}</p>
+  {/if}
+  <input
+    class={tw`block w-full border border-gray-200 rounded px-2 py-1 text-base`}
+    bind:this={inputRef}
+    on:focus
+    on:blur
+    {...inputProps}
+    {placeholder}
+    bind:value />
+</label>
