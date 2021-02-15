@@ -28,7 +28,8 @@ const compass = create({
   apiKey: "",
   botId: "",
   contactId: "",
-  journeyId: "MyJourney"
+  journeyId: "MyJourney",
+  voice: "male-en-us"
 });
 
 // Update a journey step

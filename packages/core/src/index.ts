@@ -5,6 +5,7 @@ interface Config {
   apiKey: string;
   botId: string;
   journeyId?: string;
+  voice?: string;
   contactId: string;
 }
 
@@ -98,6 +99,7 @@ export const create = (config: Config): VoiceCompass => {
         contactId: config.contactId,
         botId: config.botId,
         journeyId: stepData.journeyId || config.journeyId,
+        voice: stepData.voice || config.voice,
       })
       .then(() => {
         stepId = stepData.stepId;
@@ -113,6 +115,7 @@ export const create = (config: Config): VoiceCompass => {
           updateStep({
             ...vcAttributes,
             journeyId: vcAttributes.journeyId || config.journeyId,
+            voice: config.voice,
           });
         }
       }
@@ -131,6 +134,7 @@ export const create = (config: Config): VoiceCompass => {
             updateStep({
               ...vcAttributes,
               journeyId: vcAttributes.journeyId || config.journeyId,
+              voice: config.voice,
             });
           }
         }
@@ -150,6 +154,7 @@ export const create = (config: Config): VoiceCompass => {
             updateStep({
               ...vcAttributes,
               journeyId: vcAttributes.journeyId || config.journeyId,
+              voice: config.voice,
             });
           }
         }
