@@ -137,7 +137,7 @@ const JourneyManager = () => {
 
 ## TypeScript
 
-This SDK is written in TypeScript and include type definitions.
+This SDK is written in TypeScript and includes type definitions.
 
 ## License
 
