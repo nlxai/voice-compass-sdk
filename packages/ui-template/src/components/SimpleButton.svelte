@@ -2,6 +2,8 @@
   import { tw } from "twind";
 </script>
 
-<button on:click class={tw`text-brand font-bold`}>
-  <slot />
-</button>
+<div class={tw`text-center`}>
+  <button on:click class={tw`text-brand font-bold`}>
+    <slot />
+  </button>
+</div>

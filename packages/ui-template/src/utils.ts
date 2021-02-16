@@ -1,21 +1,27 @@
-export type RequestStatus =
-  | { type: "none" }
+export type RequestStatus<Data = {}> =
+  | { type: "noRequest" }
   | { type: "pending" }
-  | { type: "success" }
-  | { type: "error"; payload: string };
+  | { type: "success"; payload?: Data }
+  | { type: "error"; payload?: string };
 
-export const none: RequestStatus = {
-  type: "none",
+export const noRequest: RequestStatus = {
+  type: "noRequest",
 };
+
 export const pending: RequestStatus = {
   type: "pending",
 };
 
-export const success: RequestStatus = {
-  type: "success",
-};
+export function success<Data>(data?: Data): RequestStatus<Data> {
+  return {
+    type: "success",
+    payload: data,
+  };
+}
 
-export const error = (payload: string): RequestStatus => ({
-  type: "error",
-  payload,
-});
+export function error(payload?: string) {
+  return {
+    type: "error",
+    payload,
+  };
+}

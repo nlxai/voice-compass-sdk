@@ -1,15 +1,15 @@
 <script lang="ts">
   import { tw } from "twind";
-  import type { Status } from "./Button";
-  import { StatusType } from "./Button";
+  import type { RequestStatus } from "../utils";
   import LoaderDots from "./Internal/LoaderDots.svelte";
 
-  export let status: Status = { type: StatusType.Active };
+  export let status: RequestStatus = { type: "none" };
 
-  $: showContent = status.type !== StatusType.Pending;
+  export let disabled: boolean = false;
 
-  $: disabled =
-    status.type === StatusType.Pending || status.type === StatusType.Disabled;
+  $: showContent = status.type !== "pending";
+
+  $: showAsDisabled = status.type === "pending" || disabled;
 </script>
 
 <style>
@@ -23,9 +23,9 @@
 
 <button
   on:click
-  class={tw('px-8', 'py-2', 'relative', 'rounded', 'block', 'w-full', 'max-w-sm', 'mx-auto', 'uppercase', 'tracking-wider', 'bg-brand', 'text-white', disabled ? 'opacity-50 cursor-auto' : 'opacity-1 hover:bg-brandLighter')}
-  {disabled}>
-  {#if status.type === StatusType.Pending}
+  class={tw('px-8', 'py-2', 'relative', 'rounded', 'block', 'w-full', 'max-w-sm', 'mx-auto', 'uppercase', 'tracking-wider', 'bg-brand', 'text-white', showAsDisabled ? 'opacity-50 cursor-auto' : 'opacity-1 hover:bg-brandLighter')}
+  disabled={showAsDisabled}>
+  {#if status.type === 'pending'}
     <div class="dots-container">
       <LoaderDots />
     </div>

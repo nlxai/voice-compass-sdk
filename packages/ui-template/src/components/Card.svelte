@@ -6,7 +6,7 @@
 
   const fadeOut = () => {
     return {
-      duration: 500,
+      duration: 300,
       css: (t: number) => {
         const eased = quadOut(t);
         return `
@@ -23,8 +23,8 @@
 
   const fadeIn = () => {
     return {
-      duration: 500,
-      delay: 400,
+      duration: 300,
+      delay: 250,
       css: (t: number) => {
         const eased = quadIn(t);
         return `

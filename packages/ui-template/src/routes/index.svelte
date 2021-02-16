@@ -8,22 +8,30 @@
   import { tw } from "twind";
   import Cards from "../components/Cards.svelte";
   import Card from "../components/Card.svelte";
-  import CapturePhoto from "../components/CapturePhoto.svelte";
   import Button from "../components/Button.svelte";
+  import { noRequest, pending } from "../utils";
   import SimpleButton from "../components/SimpleButton.svelte";
-  import { pending } from "../components/Button";
   import Checklist from "../components/Checklist.svelte";
   import Rate from "../components/Rate.svelte";
-  import Input from "../components/Input.svelte";
   import Loader from "../components/Loader.svelte";
-  import { Kind } from "../components/Input";
   import { onMount, onDestroy } from "svelte";
   import { create } from "@nlx-voice-compass/core";
+
+  const journeyId = "MyJourney";
 
   let compass = undefined;
   let screen: string = "01";
 
   export let query: Record<string, any> = {};
+
+  const checklist = [
+    { value: "item-1", label: "Item 1" },
+    { value: "item-2", label: "Item 2" },
+    { value: "item-3", label: "Item 3" },
+  ];
+  let checklistSelected: Array<string> = [];
+
+  let rating = undefined;
 
   const stepsByScreen: Record<
     string,
@@ -33,28 +41,7 @@
     "02": "5678",
   };
 
-  const journeyId = "MyJourney";
-
-  onMount(() => {
-    compass = create({
-      apiKey: "",
-      botId: "",
-      journeyId: "MyJourney",
-      contactId: query.cid,
-    });
-
-    try {
-      compass.trackDomAnnotations();
-    } catch (err) {}
-  });
-
-  onDestroy(() => {
-    try {
-      compass.stopTrackingDomAnnotations();
-    } catch (err) {}
-  });
-
-  $: trackStep = (stepId: string) => {
+  const trackStep = (stepId: string) => {
     if (!compass) {
       return;
     }
@@ -78,15 +65,34 @@
     }
   };
 
-  let rating = undefined;
-
-  let code = "";
-
-  $: progress = screen === "01" ? undefined : 0.2;
-
   $: trackStep(screen);
 
-  let testChecked: Array<string> = [];
+  $: progress = {
+    "01": undefined,
+    "02": 0.2,
+    "03": 0.5,
+  }[screen];
+
+  onMount(() => {
+    compass = create({
+      apiKey: "",
+      botId: "",
+      journeyId: "MyJourney",
+      contactId: query.cid,
+    });
+
+    trackStep(screen);
+  });
+
+  let ratingRequestStatus = noRequest;
+
+  const submitRating = () => {
+    ratingRequestStatus = pending;
+    setTimeout(() => {
+      ratingRequestStatus = noRequest;
+      screen = "03";
+    }, 2000);
+  };
 </script>
 
 <svelte:head>
@@ -96,42 +102,34 @@
 {#if query.cid}
   <Cards {progress}>
     {#if screen === '01'}
-      <Card title="Screen 1">
-        <Loader />
-        <button
-          class={tw`bg-brand hover:bg-brandLighter text-white px-2 py-1 rounded`}
-          vc-click-stepid="1234-abcd"
-          vc-click-escalate>Click me</button>
-        {#if false}
-          <CapturePhoto />
-        {/if}
-        <p>Screen 1 content.</p>
-        <Rate bind:value={rating} />
-        <Input
-          bind:value={code}
-          placeholder="Placeholder"
-          label="Input"
-          kind={Kind.Number} />
+      <Card title="Let's get started">
+        <p>Make sure you have the following:</p>
         <Checklist
-          value={testChecked}
-          options={[{ value: 'a', label: 'A' }]}
+          value={checklistSelected}
+          options={checklist}
           on:change={(ev) => {
-            testChecked = ev.detail;
+            checklistSelected = ev.detail;
           }} />
         <div>
           <Button
-            status={undefined && pending}
+            disabled={checklist.length !== checklistSelected.length}
             on:click={() => {
               screen = '02';
             }}>
-            Next
+            Continue
           </Button>
         </div>
       </Card>
     {:else if screen === '02'}
-      <Card title="Screen 2">
-        <p>Screen 2 content.</p>
+      <Card title="Success!">
+        <Rate bind:value={rating} />
         <div>
+          <Button
+            disabled={!rating}
+            on:click={submitRating}
+            status={ratingRequestStatus}>
+            Submit rating
+          </Button>
           <SimpleButton
             on:click={() => {
               screen = '01';
@@ -139,6 +137,10 @@
             Back
           </SimpleButton>
         </div>
+      </Card>
+    {:else if screen === '03'}
+      <Card title="Success!">
+        <p>You can close the page.</p>
       </Card>
     {/if}
   </Cards>
