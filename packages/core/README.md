@@ -58,7 +58,7 @@ Manually updates the step in the journey, taking the following parameters:
 
 The simplest way to set up Voice Compass on the frontend is to annotate your markup with special tags specifying how journey steps should progress.
 
-For example, a button `<button vc-click-step="NEW_STEP_ID">Continue</button>` automatically changes the journey step when this button is clicked.
+For example, a button `<button vc-click-stepid="NEW_STEP_ID">Continue</button>` automatically changes the journey step when this button is clicked.
 
 > Tracking DOM annotations manually relies on event delegation. In order for it to work, you need to make sure events bubble up to `document.body` where they can be captured by a single global event listener set up internally by the SDK.
 
@@ -88,10 +88,10 @@ Invalidity is determined holistically based on type and validation attributes se
 
 ```html
 <!-- Email addresse: step triggers if the supplied email is invalid and the field loses focus -->
-<input type="email" vc-invalid-step="MY_INVALID_STEP" />
+<input type="email" vc-invalid-stepid="MY_INVALID_STEP" />
 
 <!-- URL's validated with regex: step triggers if the supplied URL is invalid and the field loses focus -->
-<input pattern="https?://.+" vc-invalid-step="MY_INVALID_STEP" />
+<input pattern="https?://.+" vc-invalid-stepid="MY_INVALID_STEP" />
 ```
 
 #### Focus on form fields
@@ -131,7 +131,7 @@ const JourneyManager = () => {
 
   return (
     <div>
-      <button vc-click-step="NEW_STEP">Continue</button>
+      <button vc-click-stepid="NEW_STEP">Continue</button>
     </div>
   );
 }
