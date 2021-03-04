@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { tw } from "twind";
-
   export let dark: boolean | undefined;
   export let tagline: string | undefined;
 </script>
@@ -32,6 +30,9 @@
   }
 
   .vcs-logo {
+    border-radius: 50%;
+    color: rgb(74, 102, 240);
+    background-color: currentColor;
     width: 60px;
     height: 60px;
     margin: auto;
@@ -123,8 +124,9 @@
 </style>
 
 <div class={`vcs vcs-fade-in ${dark ? 'vcs--dark' : ''}`}>
+  <!-- DO NOT USE TAILWIND HERE -->
   <div>
-    <div class={tw`rounded-full vcs-logo bg-voiceCompassPurple`}>
+    <div class="vcs-logo">
       <svg
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -174,9 +176,9 @@
           c0,1.04-0.42,1.97-1.1,2.65C76.98,78.41,76.04,78.83,75,78.83z" />
         </g>
       </svg>
-      <div class={tw`vcs-logo-circle text-voiceCompassPurple`} />
-      <div class={tw`vcs-logo-circle text-voiceCompassPurple`} />
-      <div class={tw`vcs-logo-circle text-voiceCompassPurple`} />
+      <div class={`vcs-logo-circle`} />
+      <div class={`vcs-logo-circle`} />
+      <div class={`vcs-logo-circle`} />
     </div>
     <p class="vcs-tagline">{tagline || 'Powered by Voice Compass™'}</p>
     <a class="vcs-footer-link" href="https://nlx.ai">

@@ -1,11 +1,5 @@
-<script context="module" lang="ts">
-  export async function preload(page) {
-    return { query: page.query };
-  }
-</script>
-
 <script lang="ts">
-  import { tw } from "twind";
+  import { derived } from "svelte/store";
   import Cards from "../components/Cards.svelte";
   import Card from "../components/Card.svelte";
   import Button from "../components/Button.svelte";
@@ -13,16 +7,25 @@
   import SimpleButton from "../components/SimpleButton.svelte";
   import Checklist from "../components/Checklist.svelte";
   import Rate from "../components/Rate.svelte";
-  import Loader from "../components/Loader.svelte";
-  import { onMount, onDestroy } from "svelte";
+  import { vc } from "../store";
   import { create } from "@nlx-voice-compass/core";
 
-  const journeyId = "MyJourney";
+  const vcClient = derived(vc, ($vc) =>
+    $vc.mounted
+      ? create({
+          botId: $vc.botId,
+          apiKey: $vc.apiKey,
+          contactId: $vc.contactId || "",
+          journeyId: "MyJourney",
+        })
+      : undefined
+  );
 
   let compass = undefined;
-  let screen: string = "01";
 
-  export let query: Record<string, any> = {};
+  type Screen = "01" | "02" | "03" | "04";
+
+  let screen: Screen = "01";
 
   const checklist = [
     { value: "item-1", label: "Item 1" },
@@ -33,10 +36,12 @@
 
   let rating = undefined;
 
-  const stepsByScreen: Record<
-    string,
+  type StepsByScreen = Record<
+    Screen,
     string | { stepId: string; escalate?: boolean; end?: boolean }
-  > = {
+  >;
+
+  const stepsByScreen: StepsByScreen = {
     "01": "1234",
     "02": "5678",
   };
@@ -51,19 +56,33 @@
         ? {
             stepId: step,
             payload: {},
-            journeyId,
           }
         : typeof step === "object"
         ? {
             ...step,
             payload: {},
-            journeyId,
           }
         : null;
     if (stepPayload) {
       compass.updateStep(stepPayload);
     }
   };
+
+  $: {
+    const step: StepsByScreen[keyof StepsByScreen] = stepsByScreen[screen];
+    step &&
+      $vcClient?.updateStep(
+        typeof step === "string"
+          ? {
+              stepId: step,
+              payload: {},
+            }
+          : {
+              ...step,
+              payload: {},
+            }
+      );
+  }
 
   $: trackStep(screen);
 
@@ -72,17 +91,6 @@
     "02": 0.2,
     "03": 0.5,
   }[screen];
-
-  onMount(() => {
-    compass = create({
-      apiKey: "",
-      botId: "",
-      journeyId: "MyJourney",
-      contactId: query.cid,
-    });
-
-    trackStep(screen);
-  });
 
   let ratingRequestStatus = noRequest;
 
@@ -99,7 +107,7 @@
   <title>Voice Compass Template</title>
 </svelte:head>
 
-{#if query.cid}
+{#if $vc.contactId}
   <Cards {progress}>
     {#if screen === '01'}
       <Card title="Let's get started">

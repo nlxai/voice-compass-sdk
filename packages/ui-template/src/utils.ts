@@ -1,4 +1,6 @@
-export type RequestStatus<Data = {}> =
+type _Data = Record<string, never>;
+
+export type RequestStatus<Data = _Data> =
   | { type: "noRequest" }
   | { type: "pending" }
   | { type: "success"; payload?: Data }
@@ -19,7 +21,7 @@ export function success<Data>(data?: Data): RequestStatus<Data> {
   };
 }
 
-export function error(payload?: string) {
+export function error(payload?: string): { type: "error"; payload?: string } {
   return {
     type: "error",
     payload,
