@@ -32,7 +32,13 @@ polka()
   .use(
     compression({ threshold: 0 }),
     sirv("static", { dev }),
-    sapper.middleware()
+    sapper.middleware({
+      session: () => ({
+        dev: process.env.NODE_ENV === "development",
+        BOT_ID: process.env.BOT_ID,
+        SDK_API_KEY: process.env.SDK_API_KEY,
+      }),
+    })
   )
   .listen(PORT, (err) => {
     if (err) console.log("error", err);
