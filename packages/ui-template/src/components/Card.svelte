@@ -14,7 +14,7 @@
           left: 0;
           right: 0;
           position: absolute;
-          transform: translate3d(${(1 - eased) * 6}px, 0, 0);
+          transform: translate3d(${-eased * 6}px, 0, 0);
           opacity: ${eased};
         `;
       },
@@ -28,7 +28,7 @@
       css: (t: number) => {
         const eased = quadIn(t);
         return `
-          transform: translate3d(${eased * 6}px, 0, 0);
+          transform: translate3d(${(eased - 1) * 6}px, 0, 0);
           opacity: ${eased};
         `;
       },
