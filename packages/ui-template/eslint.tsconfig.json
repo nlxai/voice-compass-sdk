@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "lib": ["DOM", "ES2017", "WebWorker"]
+  },
+  "files": [
+    "eslint.tsconfig.json",
+    ".eslintrc.js",
+    "package.json",
+    "src/template.html",
+    "tailwing.config.js"
+  ],
+  "include": ["src/**/*", "src/node_modules/**/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "static/*"]
+}
