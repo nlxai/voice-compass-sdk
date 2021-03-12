@@ -4,25 +4,26 @@ import axios from "axios";
 interface Config {
   apiKey: string;
   botId: string;
-  journeyId?: string;
-  voice?: string;
-  language?: string;
   contactId: string;
+  debug?: boolean;
+  journeyId?: string;
+  language?: string;
+  voice?: string;
 }
 
 // The journey manager object
 export interface VoiceCompass {
-  updateStep: (data: StepData) => void;
+  updateStep: <T>(data: StepData<T>) => void;
   trackDomAnnotations: () => void;
   stopTrackingDomAnnotations: () => void;
 }
 
-interface StepData {
+interface StepData<T> {
   stepId: string;
-  journeyId?: string;
+  journeyId?: Config["journeyId"];
   end?: boolean;
   escalate?: boolean;
-  payload?: object;
+  payload?: T;
 }
 
 const apiUrl = "https://api.voicecompass.ai/v1";
@@ -62,14 +63,23 @@ const inputValidationError = (inputNode: HTMLInputElement): null | string => {
   return null;
 };
 
-const readVcAttributes = (node: HTMLElement, eventType: string) => {
+const readVcAttributes = <T>(
+  node: HTMLElement,
+  eventType: string
+): {
+  stepId: StepData<T>["stepId"];
+  journeyId: StepData<T>["journeyId"];
+  escalate: StepData<T>["escalate"];
+  end: StepData<T>["end"];
+  payload: StepData<T>["payload"];
+} | null => {
   const stepId = node.getAttribute(`vc-${eventType}-stepid`);
   if (!stepId) {
     return null;
   }
   return {
     stepId,
-    journeyId: node.getAttribute(`vc-${eventType}-journeyid`),
+    journeyId: node.getAttribute(`vc-${eventType}-journeyid`) ?? undefined,
     escalate: node.hasAttribute(`vc-${eventType}-escalate`),
     end: node.hasAttribute(`vc-${eventType}-end`),
     payload: safeJsonParse(node.getAttribute(`vc-${eventType}-payload`)) || {},
@@ -85,26 +95,45 @@ export const create = (config: Config): VoiceCompass => {
     },
   });
 
-  let stepId: string | null = null;
+  let _stepId: string | null = null;
 
-  const updateStep = (stepData: StepData) => {
+  const updateStep = <T>({
+    stepId,
+    journeyId = config.journeyId,
+    end,
+    escalate,
+    payload,
+  }: StepData<T>) => {
     // skip step if the previous stepId is the same as the current stepId
-    if (stepData.stepId === stepId) {
+    if (stepId === _stepId) {
       return;
     }
 
-    client
-      .post("/track", {
-        ...stepData,
-        contactId: config.contactId,
-        botId: config.botId,
-        journeyId: stepData.journeyId || config.journeyId,
-        voice: config.voice,
-        language: config.language,
-      })
-      .then(() => {
-        stepId = stepData.stepId;
-      });
+    const _payload = {
+      stepId,
+      ...(typeof end === "boolean" ? { end } : {}),
+      ...(typeof escalate === "boolean" ? { escalate } : {}),
+      ...(typeof payload === "object" &&
+      payload !== null &&
+      !Array.isArray(payload)
+        ? payload
+        : {}),
+      contactId: config.contactId,
+      botId: config.botId,
+      journeyId,
+      voice: config.voice,
+      language: config.language,
+    };
+
+    if (config.debug) {
+      console.info(`calling new step`, JSON.stringify(_payload));
+    }
+    client.post("/track", _payload).then(() => {
+      if (config.debug) {
+        console.info(`updating stepId from ${_stepId} to ${stepId}`);
+      }
+      _stepId = stepId;
+    });
   };
 
   const handleGlobalClick = (ev: any) => {
@@ -113,10 +142,7 @@ export const create = (config: Config): VoiceCompass => {
       if (isDomElement(node)) {
         const vcAttributes = readVcAttributes(node, "click");
         if (vcAttributes) {
-          updateStep({
-            ...vcAttributes,
-            journeyId: vcAttributes.journeyId || config.journeyId,
-          });
+          updateStep(vcAttributes);
         }
       }
       node = node.parent;
@@ -131,10 +157,7 @@ export const create = (config: Config): VoiceCompass => {
         if (validationError) {
           const vcAttributes = readVcAttributes(node, "invalid");
           if (vcAttributes) {
-            updateStep({
-              ...vcAttributes,
-              journeyId: vcAttributes.journeyId || config.journeyId,
-            });
+            updateStep(vcAttributes);
           }
         }
       }
@@ -150,10 +173,7 @@ export const create = (config: Config): VoiceCompass => {
         if (validationError) {
           const vcAttributes = readVcAttributes(node, "focus");
           if (vcAttributes) {
-            updateStep({
-              ...vcAttributes,
-              journeyId: vcAttributes.journeyId || config.journeyId,
-            });
+            updateStep(vcAttributes);
           }
         }
       }
