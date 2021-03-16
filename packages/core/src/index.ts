@@ -8,6 +8,7 @@ interface Config {
   voice?: string;
   language?: string;
   contactId: string;
+  debug?: boolean;
 }
 
 // The journey manager object
@@ -93,17 +94,33 @@ export const create = (config: Config): VoiceCompass => {
       return;
     }
 
+    const payload = {
+      ...stepData,
+      contactId: config.contactId,
+      botId: config.botId,
+      journeyId: stepData.journeyId || config.journeyId,
+      voice: config.voice,
+      language: config.language,
+    };
+
     client
-      .post("/track", {
-        ...stepData,
-        contactId: config.contactId,
-        botId: config.botId,
-        journeyId: stepData.journeyId || config.journeyId,
-        voice: config.voice,
-        language: config.language,
-      })
+      .post("/track", payload)
       .then(() => {
+        if (config.debug) {
+          console.info(
+            `${String.fromCodePoint(0x02713)} step: ${payload.stepId}`,
+            payload
+          );
+        }
         stepId = stepData.stepId;
+      })
+      .catch((err: Error) => {
+        if (config.debug) {
+          console.error(
+            `${String.fromCodePoint(0x000d7)} step: ${payload.stepId}`,
+            err
+          );
+        }
       });
   };
 
