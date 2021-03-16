@@ -94,7 +94,7 @@ export const create = (config: Config): VoiceCompass => {
       return;
     }
 
-    const _payload = {
+    const payload = {
       ...stepData,
       contactId: config.contactId,
       botId: config.botId,
@@ -104,12 +104,12 @@ export const create = (config: Config): VoiceCompass => {
     };
 
     client
-      .post("/track", _payload)
+      .post("/track", payload)
       .then(() => {
         if (config.debug) {
           console.info(
-            `${String.fromCodePoint(0x02713)} step: ${_payload.stepId}`,
-            _payload
+            `${String.fromCodePoint(0x02713)} step: ${payload.stepId}`,
+            payload
           );
         }
         stepId = stepData.stepId;
@@ -117,7 +117,7 @@ export const create = (config: Config): VoiceCompass => {
       .catch((err: Error) => {
         if (config.debug) {
           console.error(
-            `${String.fromCodePoint(0x000d7)} step: ${_payload.stepId}`,
+            `${String.fromCodePoint(0x000d7)} step: ${payload.stepId}`,
             err
           );
         }
