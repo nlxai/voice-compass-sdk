@@ -103,21 +103,21 @@ export const create = (config: Config): VoiceCompass => {
       language: config.language,
     };
 
-    if (config.debug) {
-      console.info(
-        `${String.fromCodePoint(0x02713)}: step: ${_payload.stepId}`,
-        _payload
-      );
-    }
     client
       .post("/track", _payload)
       .then(() => {
+        if (config.debug) {
+          console.info(
+            `${String.fromCodePoint(0x02713)} step: ${_payload.stepId}`,
+            _payload
+          );
+        }
         stepId = stepData.stepId;
       })
       .catch((err: Error) => {
         if (config.debug) {
           console.error(
-            `${String.fromCodePoint(0x000d7)}: step: ${_payload.stepId}`,
+            `${String.fromCodePoint(0x000d7)} step: ${_payload.stepId}`,
             err
           );
         }
