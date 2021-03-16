@@ -30,7 +30,8 @@ const compass = create({
   contactId: "",
   journeyId: "MyJourney",
   language: "en-us",
-  voice: "male-en-us"
+  voice: "male-en-us",
+  debug: true // turn on debug mode
 });
 
 // Update a journey step
@@ -52,6 +53,7 @@ Manually updates the step in the journey, taking the following parameters:
 * `journeyId?: string` (optional): a journey ID that is different from the one supplied when the instance was created.
 * `escalate?: boolean` (optional): a boolean flag setting whether the flow is escalating to a human agent at this step.
 * `end?: boolean` (optional): a boolean flag setting whether the flow is ending at this step.
+* `bidirectional?: boolean` (optional): this flag turns on bidirectional mode in the journey. This is an advanced feature.
 * `payload?: object` (optional): a payload object with additional information.
 
 ### `trackDomAnnotations`
@@ -72,6 +74,7 @@ These attributes control how the Voice Compass agent should react to a click. Th
 * `vc-click-journeyid`: the journey ID triggered by a click.
 * `vc-click-escalate`: boolean attribute set when a click should escalate a journey.
 * `vc-click-end`: boolean attribute set when a click should end a journey.
+* `vc-click-bidirectional`: boolean attribute set when a click should end a journey.
 * `vc-click-payload`: a stringified object containing the payload at this step.
 
 #### Invalid form field events
@@ -82,6 +85,7 @@ These attributes control how the Voice Compass agent should react to an invalid 
 * `vc-invalid-journeyid`: the journey ID triggered by an invalid form field.
 * `vc-invalid-escalate`: boolean attribute set when an invalid form field should escalate a journey.
 * `vc-invalid-end`: boolean attribute set when an invalid form field should end a journey.
+* `vc-invalid-bidirectional`: boolean attribute set when an invalid form field should end a journey.
 * `vc-invalid-payload`: a stringified object containing the payload at this step.
 
 Invalidity is determined holistically based on type and validation attributes set on the field. For instance, the following markup:

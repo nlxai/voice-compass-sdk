@@ -23,6 +23,7 @@ interface StepData {
   journeyId?: string;
   end?: boolean;
   escalate?: boolean;
+  bidirectional?: boolean;
   payload?: object;
 }
 
@@ -73,6 +74,7 @@ const readVcAttributes = (node: HTMLElement, eventType: string) => {
     journeyId: node.getAttribute(`vc-${eventType}-journeyid`),
     escalate: node.hasAttribute(`vc-${eventType}-escalate`),
     end: node.hasAttribute(`vc-${eventType}-end`),
+    bidirectional: node.hasAttribute(`vc-${eventType}-bidirectional`),
     payload: safeJsonParse(node.getAttribute(`vc-${eventType}-payload`)) || {},
   };
 };
