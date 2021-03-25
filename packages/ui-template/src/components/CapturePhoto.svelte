@@ -33,7 +33,7 @@
       const newStream = await navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
-          facingMode: "user",
+          facingMode: "environment",
         },
       });
       stream = newStream;
