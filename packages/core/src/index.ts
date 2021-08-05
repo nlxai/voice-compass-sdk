@@ -9,6 +9,7 @@ interface Config {
   language?: string;
   contactId: string;
   debug?: boolean;
+  dev?: boolean;
 }
 
 // The journey manager object
@@ -27,7 +28,9 @@ interface StepData {
   payload?: object;
 }
 
-const apiUrl = "https://api.voicecompass.ai/v1";
+const devApiUrl = "https://dev.journeys.voicecompass.ai/v1/track";
+
+const prodApiUrl = "https://journeys.voicecompass.ai/v1/track";
 
 const safeJsonParse = (value: any): any => {
   try {
@@ -81,7 +84,7 @@ const readVcAttributes = (node: HTMLElement, eventType: string) => {
 
 export const create = (config: Config): VoiceCompass => {
   const client = axios.create({
-    baseURL: apiUrl,
+    baseURL: config.dev ? devApiUrl : prodApiUrl,
     timeout: 15000,
     headers: {
       "x-api-key": config.apiKey,
