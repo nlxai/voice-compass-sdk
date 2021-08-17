@@ -11,6 +11,10 @@ interface Config {
   contactId: string;
   debug?: boolean;
   dev?: boolean;
+  timeoutSettings?: {
+    seconds: number;
+    stepId: string;
+  };
 }
 
 // The journey manager object
@@ -101,14 +105,11 @@ export const create = (config: Config): VoiceCompass => {
     },
   });
 
+  let timeout: number | null = null;
+
   let stepId: string | null = null;
 
-  const updateStep = (stepData: StepData) => {
-    // skip step if the previous stepId is the same as the current stepId
-    if (stepData.stepId === stepId) {
-      return;
-    }
-
+  const sendUpdateRequest = (stepData: StepData) => {
     const payload = {
       ...stepData,
       contactId: config.contactId,
@@ -137,6 +138,33 @@ export const create = (config: Config): VoiceCompass => {
           );
         }
       });
+  };
+
+  const updateStep = (stepData: StepData) => {
+    // If there is an active timeout, remove it
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+
+    const { timeoutSettings } = config;
+
+    // If timeout logic is configured, set it up here
+    if (timeoutSettings) {
+      timeout = setTimeout(() => {
+        sendUpdateRequest({
+          stepId: timeoutSettings.stepId,
+          end: true,
+        });
+      }, timeoutSettings.seconds * 1000) as unknown as number;
+    }
+
+    // skip step if the previous stepId is the same as the current stepId
+    if (stepData.stepId === stepId) {
+      return;
+    }
+
+    sendUpdateRequest(stepData);
   };
 
   const handleGlobalClick = (ev: any) => {

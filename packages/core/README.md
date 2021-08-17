@@ -31,7 +31,13 @@ const compass = create({
   journeyId: "MyJourney",
   language: "en-us",
   voice: "male-en-us",
-  debug: true // turn on debug mode
+  debug: true, // turn on debug mode
+  // Specify a timeout such that if no steps are triggered for e.g. 90 seconds,
+  // the call ends with a user-defined end step.
+  timeoutSettings: {
+    seconds: 90,
+    stepId: "abcd-1234-efgh-5678",
+  }
 });
 
 // Update a journey step
