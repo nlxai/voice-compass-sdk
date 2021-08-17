@@ -142,7 +142,7 @@ export const create = (config: Config): VoiceCompass => {
 
   const updateStep = (stepData: StepData) => {
     // If there is an active timeout, remove it
-    if (timeout) {
+    if (timeout !== null) {
       clearTimeout(timeout);
       timeout = null;
     }
