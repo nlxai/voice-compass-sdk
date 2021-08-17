@@ -2,6 +2,7 @@ import axios from "axios";
 
 // Initial configuration used when creating a journey manager
 interface Config {
+  apiVersion?: "v1" | "v2";
   apiKey: string;
   botId: string;
   journeyId?: string;
@@ -27,6 +28,8 @@ interface StepData {
   bidirectional?: boolean;
   payload?: object;
 }
+
+const legacyApiUrl = "https://api.voicecompass.ai/v1";
 
 const devApiUrl = "https://dev.journeys.voicecompass.ai/v1/track";
 
@@ -83,8 +86,15 @@ const readVcAttributes = (node: HTMLElement, eventType: string) => {
 };
 
 export const create = (config: Config): VoiceCompass => {
+  const apiUrl =
+    config.apiVersion === "v2"
+      ? config.dev
+        ? devApiUrl
+        : prodApiUrl
+      : legacyApiUrl;
+
   const client = axios.create({
-    baseURL: config.dev ? devApiUrl : prodApiUrl,
+    baseURL: apiUrl,
     timeout: 15000,
     headers: {
       "x-api-key": config.apiKey,
