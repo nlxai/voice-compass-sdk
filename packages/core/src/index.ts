@@ -35,9 +35,9 @@ interface StepData {
 
 const legacyApiUrl = "https://api.voicecompass.ai/v1";
 
-const devApiUrl = "https://dev.journeys.voicecompass.ai/v1/track";
+const devApiUrl = "https://dev.journeys.voicecompass.ai/v1";
 
-const prodApiUrl = "https://journeys.voicecompass.ai/v1/track";
+const prodApiUrl = "https://journeys.voicecompass.ai/v1";
 
 const safeJsonParse = (value: any): any => {
   try {
