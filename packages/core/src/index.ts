@@ -90,6 +90,12 @@ const readVcAttributes = (node: HTMLElement, eventType: string) => {
 };
 
 export const create = (config: Config): VoiceCompass => {
+  if (!config.contactId) {
+    console.warn(
+      'No contact ID provided. Please call the Voice Compass client `create` method with a `contactId` field extracted from the URL. Example code: `new URLSearchParams(window.location.search).get("cid")`'
+    );
+  }
+
   const apiUrl =
     config.apiVersion === "v2"
       ? config.dev
@@ -140,7 +146,7 @@ export const create = (config: Config): VoiceCompass => {
       });
   };
 
-  const updateStep = (stepData: StepData) => {
+  const resetCallTimeout = () => {
     // If there is an active timeout, remove it
     if (timeout !== null) {
       clearTimeout(timeout);
@@ -158,6 +164,12 @@ export const create = (config: Config): VoiceCompass => {
         });
       }, timeoutSettings.seconds * 1000) as unknown as number;
     }
+  };
+
+  resetCallTimeout();
+
+  const updateStep = (stepData: StepData) => {
+    resetCallTimeout();
 
     // skip step if the previous stepId is the same as the current stepId
     if (stepData.stepId === stepId) {

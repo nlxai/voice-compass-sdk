@@ -23,11 +23,14 @@ Alternatively, you can get a standalone script:
 ```js
 import { create } from "@nlx-voice-compass/core";
 
+// Extract contact ID from the 'cid' URL query parameter
+const contactId = new URLSearchParams(window.location.search).get("cid");
+
 // Create journey manager object
 const compass = create({
   apiKey: "",
   botId: "",
-  contactId: "",
+  contactId,
   journeyId: "MyJourney",
   language: "en-us",
   voice: "male-en-us",
