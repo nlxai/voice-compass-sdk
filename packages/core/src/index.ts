@@ -19,7 +19,7 @@ interface Config {
 
 // The journey manager object
 export interface VoiceCompass {
-  updateStep: (data: StepData) => void;
+  updateStep: (data: StepData) => Promise<StepUpdate>;
   trackDomAnnotations: () => void;
   stopTrackingDomAnnotations: () => void;
 }
@@ -31,6 +31,12 @@ interface StepData {
   escalate?: boolean;
   bidirectional?: boolean;
   payload?: object;
+}
+
+export interface StepUpdate {
+  escalate?: boolean;
+  end?: boolean;
+  error?: string;
 }
 
 const legacyApiUrl = "https://api.voicecompass.ai/v1";
@@ -97,7 +103,7 @@ export const create = (config: Config): VoiceCompass => {
   }
 
   const apiUrl =
-    config.apiVersion === "v2"
+    !config.apiVersion || config.apiVersion === "v2"
       ? config.dev
         ? devApiUrl
         : prodApiUrl
@@ -115,7 +121,7 @@ export const create = (config: Config): VoiceCompass => {
 
   let stepId: string | null = null;
 
-  const sendUpdateRequest = (stepData: StepData) => {
+  const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
     const payload = {
       ...stepData,
       contactId: config.contactId,
@@ -125,9 +131,9 @@ export const create = (config: Config): VoiceCompass => {
       language: config.language,
     };
 
-    client
-      .post("/track", payload)
-      .then(() => {
+    return client
+      .post<StepUpdate>("/track", payload)
+      .then((res) => {
         if (config.debug) {
           console.info(
             `${String.fromCodePoint(0x02713)} step: ${payload.stepId}`,
@@ -135,6 +141,7 @@ export const create = (config: Config): VoiceCompass => {
           );
         }
         stepId = stepData.stepId;
+        return res.data;
       })
       .catch((err: Error) => {
         if (config.debug) {
@@ -143,6 +150,10 @@ export const create = (config: Config): VoiceCompass => {
             err
           );
         }
+        return {
+          // TODO: look into propagating more error context
+          error: "Something went wrong",
+        };
       });
   };
 
@@ -173,10 +184,10 @@ export const create = (config: Config): VoiceCompass => {
 
     // skip step if the previous stepId is the same as the current stepId
     if (stepData.stepId === stepId) {
-      return;
+      return Promise.resolve({});
     }
 
-    sendUpdateRequest(stepData);
+    return sendUpdateRequest(stepData);
   };
 
   const handleGlobalClick = (ev: any) => {

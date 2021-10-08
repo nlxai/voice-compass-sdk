@@ -28,11 +28,12 @@ const contactId = new URLSearchParams(window.location.search).get("cid");
 
 // Create journey manager object
 const compass = create({
+  apiVersion: "v2", // Specify "v1" for legacy Voice Compass journeys. Ommitting this parameter defaults it to "v2"
   apiKey: "",
   botId: "",
   contactId,
   journeyId: "MyJourney",
-  language: "en-us",
+  language: "en-US",
   voice: "male-en-us",
   debug: true, // turn on debug mode
   // Specify a timeout such that if no steps are triggered for e.g. 90 seconds,
