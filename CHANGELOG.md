@@ -1,6 +1,6 @@
 The package API has been largely the same in pre-1.0.0 versions.
 
-## 1.0.0
+## 1.0.0 (draft)
 
 * Creating a client (`create`)
   * `language` has been renamed to `languageOverride`, as deployed assistants define their own language. Overriding the language is now an advanced use case.
