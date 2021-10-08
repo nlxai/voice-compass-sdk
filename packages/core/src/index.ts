@@ -6,8 +6,8 @@ interface Config {
   apiKey: string;
   botId: string;
   journeyId?: string;
-  voice?: string;
-  language?: string;
+  voiceOverride?: string;
+  languageOverride?: string;
   contactId: string;
   debug?: boolean;
   dev?: boolean;
@@ -27,8 +27,8 @@ export interface VoiceCompass {
 interface StepData {
   stepId: string;
   journeyId?: string;
-  end?: boolean;
-  escalate?: boolean;
+  forceEnd?: boolean;
+  forceEscalate?: boolean;
   bidirectional?: boolean;
   payload?: object;
 }
@@ -122,13 +122,16 @@ export const create = (config: Config): VoiceCompass => {
   let stepId: string | null = null;
 
   const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
+    const { forceEnd, forceEscalate, ...rest } = stepData;
     const payload = {
-      ...stepData,
+      ...rest,
+      end: forceEnd,
+      escalate: forceEscalate,
       contactId: config.contactId,
       botId: config.botId,
       journeyId: stepData.journeyId || config.journeyId,
-      voice: config.voice,
-      language: config.language,
+      voice: config.voiceOverride,
+      language: config.languageOverride,
     };
 
     return client
@@ -171,7 +174,7 @@ export const create = (config: Config): VoiceCompass => {
       timeout = setTimeout(() => {
         sendUpdateRequest({
           stepId: timeoutSettings.stepId,
-          end: true,
+          forceEnd: true,
         });
       }, timeoutSettings.seconds * 1000) as unknown as number;
     }
