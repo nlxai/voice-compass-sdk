@@ -80,16 +80,19 @@ const inputValidationError = (inputNode: HTMLInputElement): null | string => {
   return null;
 };
 
-const readVcAttributes = (node: HTMLElement, eventType: string) => {
+const readVcAttributes = (
+  node: HTMLElement,
+  eventType: string
+): StepData | null => {
   const stepId = node.getAttribute(`vc-${eventType}-stepid`);
   if (!stepId) {
     return null;
   }
   return {
     stepId,
-    journeyId: node.getAttribute(`vc-${eventType}-journeyid`),
-    escalate: node.hasAttribute(`vc-${eventType}-escalate`),
-    end: node.hasAttribute(`vc-${eventType}-end`),
+    journeyId: node.getAttribute(`vc-${eventType}-journeyid`) || undefined,
+    forceEscalate: node.hasAttribute(`vc-${eventType}-escalate`),
+    forceEnd: node.hasAttribute(`vc-${eventType}-end`),
     bidirectional: node.hasAttribute(`vc-${eventType}-bidirectional`),
     payload: safeJsonParse(node.getAttribute(`vc-${eventType}-payload`)) || {},
   };
