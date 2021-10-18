@@ -91,8 +91,14 @@ const readVcAttributes = (
   return {
     stepId,
     journeyId: node.getAttribute(`vc-${eventType}-journeyid`) || undefined,
-    forceEscalate: node.hasAttribute(`vc-${eventType}-escalate`),
-    forceEnd: node.hasAttribute(`vc-${eventType}-end`),
+    forceEscalate:
+      node.hasAttribute(`vc-${eventType}-force-escalate`) ||
+      // Deprecated
+      node.hasAttribute(`vc-${eventType}-escalate`),
+    forceEnd:
+      node.hasAttribute(`vc-${eventType}-force-end`) ||
+      // Deprecated
+      node.hasAttribute(`vc-${eventType}-end`),
     bidirectional: node.hasAttribute(`vc-${eventType}-bidirectional`),
     payload: safeJsonParse(node.getAttribute(`vc-${eventType}-payload`)) || {},
   };

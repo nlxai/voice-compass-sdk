@@ -18,7 +18,7 @@ Alternatively, you can get a standalone script:
 </script>
 ```
 
-## Basic Usage
+## Creating an SDK client
 
 ```js
 import { create } from "@nlx-voice-compass/core";
@@ -33,15 +33,16 @@ const compass = create({
   botId: "",
   contactId,
   journeyId: "MyJourney",
-  language: "en-US",
-  voice: "male-en-us",
   debug: true, // turn on debug mode
   // Specify a timeout such that if no steps are triggered for e.g. 90 seconds,
   // the call ends with a user-defined end step.
   timeoutSettings: {
     seconds: 90,
     stepId: "abcd-1234-efgh-5678",
-  }
+  },
+  // Other optional fields:
+  // languageOverride: "es-US",
+  // voiceOverride: "",
 });
 
 // Update a journey step
@@ -61,8 +62,8 @@ Manually updates the step in the journey, taking the following parameters:
 
 * `stepId: string` (required): the new step ID.
 * `journeyId?: string` (optional): a journey ID that is different from the one supplied when the instance was created.
-* `escalate?: boolean` (optional): a boolean flag setting whether the flow is escalating to a human agent at this step.
-* `end?: boolean` (optional): a boolean flag setting whether the flow is ending at this step.
+* `forceEscalate?: boolean` (optional): a boolean flag setting whether the flow is escalating to a human agent at this step.
+* `forceEnd?: boolean` (optional): a boolean flag setting whether the flow is ending at this step.
 * `bidirectional?: boolean` (optional): this flag turns on bidirectional mode in the journey. This is an advanced feature.
 * `payload?: object` (optional): a payload object with additional information.
 
@@ -82,8 +83,8 @@ These attributes control how the Voice Compass agent should react to a click. Th
 
 * `vc-click-stepid`: the step ID triggered by a click.
 * `vc-click-journeyid`: the journey ID triggered by a click.
-* `vc-click-escalate`: boolean attribute set when a click should escalate a journey.
-* `vc-click-end`: boolean attribute set when a click should end a journey.
+* `vc-click-force-escalate`: boolean attribute set when a click should escalate a journey.
+* `vc-click-force-end`: boolean attribute set when a click should end a journey.
 * `vc-click-bidirectional`: boolean attribute set when a click should end a journey.
 * `vc-click-payload`: a stringified object containing the payload at this step.
 
@@ -93,8 +94,8 @@ These attributes control how the Voice Compass agent should react to an invalid 
 
 * `vc-invalid-stepid`: the step ID triggered by an invalid form field.
 * `vc-invalid-journeyid`: the journey ID triggered by an invalid form field.
-* `vc-invalid-escalate`: boolean attribute set when an invalid form field should escalate a journey.
-* `vc-invalid-end`: boolean attribute set when an invalid form field should end a journey.
+* `vc-invalid-force-escalate`: boolean attribute set when an invalid form field should escalate a journey.
+* `vc-invalid-force-end`: boolean attribute set when an invalid form field should end a journey.
 * `vc-invalid-bidirectional`: boolean attribute set when an invalid form field should end a journey.
 * `vc-invalid-payload`: a stringified object containing the payload at this step.
 
