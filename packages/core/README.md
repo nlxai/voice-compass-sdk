@@ -85,7 +85,7 @@ These attributes control how the Voice Compass agent should react to a click. Th
 * `vc-click-journeyid`: the journey ID triggered by a click.
 * `vc-click-force-escalate`: boolean attribute set when a click should escalate a journey.
 * `vc-click-force-end`: boolean attribute set when a click should end a journey.
-* `vc-click-bidirectional`: boolean attribute set when a click should end a journey.
+* `vc-click-bidirectional`: boolean attribute that turns on bidirectional mode on click.
 * `vc-click-payload`: a stringified object containing the payload at this step.
 
 #### Invalid form field events
@@ -96,7 +96,7 @@ These attributes control how the Voice Compass agent should react to an invalid 
 * `vc-invalid-journeyid`: the journey ID triggered by an invalid form field.
 * `vc-invalid-force-escalate`: boolean attribute set when an invalid form field should escalate a journey.
 * `vc-invalid-force-end`: boolean attribute set when an invalid form field should end a journey.
-* `vc-invalid-bidirectional`: boolean attribute set when an invalid form field should end a journey.
+* `vc-invalid-bidirectional`: boolean attribute that turns on bidirectional mode when a form field is invalid.
 * `vc-invalid-payload`: a stringified object containing the payload at this step.
 
 Invalidity is determined holistically based on type and validation attributes set on the field. For instance, the following markup:
