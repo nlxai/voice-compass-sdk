@@ -27,6 +27,10 @@ export interface VoiceCompass {
 interface StepData {
   stepId: string;
   journeyId?: string;
+  // Deprecated, use `forceEnd`
+  end?: boolean;
+  // Deprecated, use `forceEscalate`
+  escalate?: boolean;
   forceEnd?: boolean;
   forceEscalate?: boolean;
   bidirectional?: boolean;
@@ -131,11 +135,11 @@ export const create = (config: Config): VoiceCompass => {
   let stepId: string | null = null;
 
   const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
-    const { forceEnd, forceEscalate, ...rest } = stepData;
+    const { end, forceEnd, escalate, forceEscalate, ...rest } = stepData;
     const payload = {
       ...rest,
-      end: forceEnd,
-      escalate: forceEscalate,
+      end: forceEnd || end,
+      escalate: forceEscalate || escalate,
       contactId: config.contactId,
       botId: config.botId,
       journeyId: stepData.journeyId || config.journeyId,
