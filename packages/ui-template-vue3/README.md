@@ -1,24 +1,25 @@
-# ui-template-vue
+# ui-template-vue3
 
-## Project setup
-```
-npm install
-```
+Vue 3 template for Voice Compass journeys.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Scaffolding with the template
 
-### Compiles and minifies for production
-```
-npm run build
-```
+Create a new Voice Compass experience using [degit](https://github.com/Rich-Harris/degit).
 
-### Lints and fixes files
-```
-npm run lint
-```
+* `npm install -g degit`
+* `cd my-project`
+* `degit nlxai/voice-compass-sdk/packages/ui-template-vue3`
+* `npm install`
+* `npm run serve`
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Running in from a direct clone
+
+If you want to simply run this project locally inside the repository:
+
+`npm install`
+
+`npm run serve`
+
+## License
+
+MIT.
