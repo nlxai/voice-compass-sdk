@@ -7,7 +7,7 @@ Vue 3 template for Voice Compass journeys.
 Create a new Voice Compass experience using [degit](https://github.com/Rich-Harris/degit).
 
 * `npm install -g degit`
-* `cd my-project`
+* `mkdir my-project && cd my-project` (replace with any folder name of your choice)
 * `degit nlxai/voice-compass-sdk/packages/ui-template-vue3`
 * `npm install`
 * `npm run serve`
