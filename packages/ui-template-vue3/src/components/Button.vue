@@ -1,21 +1,20 @@
 <template>
-  <button @click="$emit('click')"><slot /></button>
+  <button
+    class="
+      px-4
+      py-2
+      rounded
+      mx-auto
+      tracking-wider
+      font-bold
+      uppercase
+      bg-black
+      hover:bg-gray-800
+      block
+      text-white
+    "
+    @click="$emit('click')"
+  >
+    <slot />
+  </button>
 </template>
-
-<style scoped>
-button {
-  padding: 8px 24px;
-  background-color: #000;
-  border: 0;
-  color: #fff;
-  font-size: 1rem;
-  border-radius: 4px;
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.25px;
-}
-
-button:hover {
-  background-color: #232323;
-}
-</style>

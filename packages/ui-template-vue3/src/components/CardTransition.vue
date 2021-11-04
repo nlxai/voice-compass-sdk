@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container max-w-lg mx-auto relative">
     <transition-group name="fade" mode="out-in">
       <slot />
     </transition-group>
@@ -13,27 +13,20 @@ export default {
 </script>
 
 <style>
-.container {
-  max-width: 600px;
-  margin: auto;
-  position: relative;
-}
-
 .container > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
   transition: opacity 0.3s, transform 0.3s;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transform: translate3d(0, 0, 0);
-}
-.fade-enter {
-  transform: translate3d(6px, 0, 0);
+.fade-enter-from {
+  transform: translate3d(12px, 0, 0);
   position: relative;
   opacity: 0;
 }
+
 .fade-leave-to {
-  transform: translate3d(-6px, 0, 0);
+  transform: translate3d(-12px, 0, 0);
   position: absolute;
   left: 0;
   right: 0;

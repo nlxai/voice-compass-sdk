@@ -1,6 +1,6 @@
 <template>
-  <div class="content">
-    <h2>{{ title }}</h2>
+  <div class="space-y-8 text-center py-8 px-4 font-sans">
+    <h2 class="text-4xl font-bold">{{ title }}</h2>
     <slot />
   </div>
 </template>
@@ -16,28 +16,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.progress {
-  position: absolute;
-  height: 6px;
-  width: calc(100% - 12px);
-  transition: width 0.3s ease-in-out;
-  top: 0px;
-  left: 6px;
-}
-
-.content {
-  font-size: 1rem;
-}
-
-.content > * + * {
-  margin-top: 30px;
-}
-
-h2 {
-  margin: 0;
-  font-size: 3rem;
-  padding: 30px 0;
-}
-</style>
