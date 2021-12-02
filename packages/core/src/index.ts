@@ -132,8 +132,6 @@ export const create = (config: Config): VoiceCompass => {
 
   let timeout: number | null = null;
 
-  let stepId: string | null = null;
-
   const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
     const { end, forceEnd, escalate, forceEscalate, ...rest } = stepData;
     const payload = {
@@ -156,7 +154,6 @@ export const create = (config: Config): VoiceCompass => {
             payload
           );
         }
-        stepId = stepData.stepId;
         return res.data;
       })
       .catch((err: Error) => {
@@ -197,12 +194,6 @@ export const create = (config: Config): VoiceCompass => {
 
   const updateStep = (stepData: StepData) => {
     resetCallTimeout();
-
-    // skip step if the previous stepId is the same as the current stepId
-    if (stepData.stepId === stepId) {
-      return Promise.resolve({});
-    }
-
     return sendUpdateRequest(stepData);
   };
 
