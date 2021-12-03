@@ -206,7 +206,7 @@ export const create = (config: Config): VoiceCompass => {
   const updateStep = (stepData: StepData) => {
     if (stepData.stepId === previousStepId && config.preventRepeats) {
       const warning = `Duplicate step ID detected, step update prevented: ${stepData.stepId}`;
-      if (config.dev) {
+      if (config.debug) {
         console.warn(warning);
       }
       return Promise.resolve({
