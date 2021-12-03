@@ -1,6 +1,6 @@
 {
   "name": "@nlx-voice-compass/ui-template-vue3",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@nlx-voice-compass/core": "^1.0.0-alpha.4",
+    "@nlx-voice-compass/core": "^1.0.0-alpha.5",
     "core-js": "^3.6.5",
     "vue": "^3.0.0"
   },
