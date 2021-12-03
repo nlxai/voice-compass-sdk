@@ -1,5 +1,5 @@
 {
-  "name": "ui-template-vue",
+  "name": "@nlx-voice-compass/ui-template-vue3",
   "version": "1.0.0-alpha.3",
   "private": true,
   "scripts": {

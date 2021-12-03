@@ -4,10 +4,12 @@ import axios from "axios";
 interface Config {
   apiVersion?: "v1" | "v2";
   apiKey: string;
-  botId: string;
+  journeyAssistantId?: string;
+  botId?: string; // Deprecated, use `journeyAssistantId`
   journeyId?: string;
   voiceOverride?: string;
   languageOverride?: string;
+  preventRepeats?: boolean;
   contactId: string;
   debug?: boolean;
   dev?: boolean;
@@ -27,12 +29,10 @@ export interface VoiceCompass {
 interface StepData {
   stepId: string;
   journeyId?: string;
-  // Deprecated, use `forceEnd`
-  end?: boolean;
-  // Deprecated, use `forceEscalate`
-  escalate?: boolean;
   forceEnd?: boolean;
+  end?: boolean; // Deprecated, use `forceEnd`
   forceEscalate?: boolean;
+  escalate?: boolean; // Deprecated, use `forceEscalate`
   bidirectional?: boolean;
   payload?: object;
 }
@@ -41,6 +41,7 @@ export interface StepUpdate {
   escalate?: boolean;
   end?: boolean;
   error?: string;
+  warning?: string;
 }
 
 const legacyApiUrl = "https://api.voicecompass.ai/v1";
@@ -109,9 +110,17 @@ const readVcAttributes = (
 };
 
 export const create = (config: Config): VoiceCompass => {
+  const botId = config.journeyAssistantId || config.botId;
+
   if (!config.contactId) {
     console.warn(
       'No contact ID provided. Please call the Voice Compass client `create` method with a `contactId` field extracted from the URL. Example code: `new URLSearchParams(window.location.search).get("cid")`'
+    );
+  }
+
+  if (config.botId) {
+    console.warn(
+      "The `botId` configuration option has been renamed to `journeyAssistantId`."
     );
   }
 
@@ -130,6 +139,8 @@ export const create = (config: Config): VoiceCompass => {
     },
   });
 
+  let previousStepId: string | null = null;
+
   let timeout: number | null = null;
 
   const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
@@ -139,7 +150,7 @@ export const create = (config: Config): VoiceCompass => {
       end: forceEnd || end,
       escalate: forceEscalate || escalate,
       contactId: config.contactId,
-      botId: config.botId,
+      botId,
       journeyId: stepData.journeyId || config.journeyId,
       voice: config.voiceOverride,
       language: config.languageOverride,
@@ -193,6 +204,16 @@ export const create = (config: Config): VoiceCompass => {
   resetCallTimeout();
 
   const updateStep = (stepData: StepData) => {
+    if (stepData.stepId === previousStepId && config.preventRepeats) {
+      const warning = `Duplicate step ID detected, step update prevented: ${stepData.stepId}`;
+      if (config.dev) {
+        console.warn(warning);
+      }
+      return Promise.resolve({
+        warning: warning,
+      });
+    }
+    previousStepId = stepData.stepId;
     resetCallTimeout();
     return sendUpdateRequest(stepData);
   };

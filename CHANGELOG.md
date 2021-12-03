@@ -5,6 +5,7 @@ The package API has been largely the same in pre-1.0.0 versions.
 * Creating a client (`create`)
   * `language` has been renamed to `languageOverride`, as deployed assistants define their own language. Overriding the language is now an advanced use case.
   * `voice` has been renamed to `voiceOverride`, as deployed assistants define their own voice. Overriding the voice is now an advanced use case.
+  * `botId` has been renamed to `journeyAssistantId`.
 * Step updates (`client.updateStep`)
   * updating steps now returns a promise resolving in `{ end?: boolean; escalate?: boolean; error?: string }`. You can change frontend state accordingly.
   * the `end` parameter has been renamed to `forceEnd`, as `end` nodes are defined by the deployed assistant. Forcing an `end` is an advanced use case, or it might be useful as a debugging tool.

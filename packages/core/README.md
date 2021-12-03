@@ -28,10 +28,10 @@ const contactId = new URLSearchParams(window.location.search).get("cid");
 
 // Create journey manager object
 const compass = create({
+  contactId,
   apiVersion: "v2", // Specify "v1" for legacy Voice Compass journeys. Ommitting this parameter defaults it to "v2"
   apiKey: "",
-  botId: "",
-  contactId,
+  journeyAssistantId: "",
   journeyId: "MyJourney",
   debug: true, // turn on debug mode
   // Specify a timeout such that if no steps are triggered for e.g. 90 seconds,
@@ -43,6 +43,7 @@ const compass = create({
   // Other optional fields:
   // languageOverride: "es-US",
   // voiceOverride: "",
+  // preventRepeats: true,
 });
 
 // Update a journey step
@@ -133,7 +134,7 @@ const JourneyManager = () => {
   useEffect(() => {
     const compass = create({
       apiKey: "",
-      botId: "",
+      journeyAssistantId: "",
       contactId: "",
       journeyId: "MyJourney"
     });
