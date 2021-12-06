@@ -22,6 +22,7 @@ interface Config {
 // The journey manager object
 export interface VoiceCompass {
   updateStep: (data: StepData) => Promise<StepUpdate>;
+  getLastStepId: () => string | null;
   trackDomAnnotations: () => void;
   stopTrackingDomAnnotations: () => void;
 }
@@ -274,6 +275,9 @@ export const create = (config: Config): VoiceCompass => {
 
   return {
     updateStep,
+    getLastStepId: () => {
+      return previousStepId;
+    },
     trackDomAnnotations: () => {
       document.addEventListener("click", handleGlobalClick);
       // The 'blur' even does not bubble, hence 'focusout'
