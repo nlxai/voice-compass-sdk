@@ -1,15 +1,14 @@
 <script lang="ts">
   import { tw } from "twind";
   import { onMount } from "svelte";
-  import { stores } from "@sapper/app";
   import Header from "../components/Header.svelte";
   import Footer from "../components/Footer.svelte";
   import SplashScreen from "../components/SplashScreen.svelte";
+  import { setup } from "twind";
+  import theme from "../theme";
   import { vc } from "../store";
 
-  const { session } = stores();
-
-  let showSplash = !$session.dev;
+  let showSplash = true;
 
   onMount(() => {
     const params = new URLSearchParams(window.location.search);
@@ -23,6 +22,16 @@
     }, 2000);
   });
 </script>
+
+{#if showSplash}
+  <SplashScreen />
+{:else}
+  <Header />
+  <main class={tw`px-8`}>
+    <slot />
+  </main>
+  <Footer />
+{/if}
 
 <style>
   @keyframes fade-in {
@@ -42,13 +51,3 @@
     animation-duration: 0.2s;
   }
 </style>
-
-{#if showSplash}
-  <SplashScreen />
-{:else}
-  <Header />
-  <main class={tw`px-8`}>
-    <slot />
-  </main>
-  <Footer />
-{/if}
