@@ -166,7 +166,10 @@ Using the SDK is not mandatory - you can run a Voice Compass experience using HT
 
 * url: `https://journeys.voicecompass.ai/v1`
 * method: `POST`
-* request body:
+* request headers:
+  * `x-api-key`: the API key obtained from the setup code snippet
+  * `content-type: "application/json"`
+* as request body, send a JSON object with the following fields:
   * `contactId: string`: extracted from the `cid` query parameter on your webpage or using tools like https://branch.io
   * `journeyId: string`: journey ID obtained from the setup code snippet
   * `journeyAssistantId: string`: assistant ID obtained from the setup code snippet
