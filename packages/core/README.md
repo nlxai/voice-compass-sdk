@@ -65,6 +65,7 @@ Manually updates the step in the journey, taking the following parameters:
 * `journeyId?: string` (optional): a journey ID that is different from the one supplied when the instance was created.
 * `forceEscalate?: boolean` (optional): a boolean flag setting whether the flow is escalating to a human agent at this step.
 * `forceEnd?: boolean` (optional): a boolean flag setting whether the flow is ending at this step.
+* `forceAutomate?: boolean` (optional): a boolean flag setting whether the flow is marked as automated at this step.
 * `bidirectional?: boolean` (optional): this flag turns on bidirectional mode in the journey. This is an advanced feature.
 * `payload?: object` (optional): a payload object with additional information.
 
@@ -86,6 +87,7 @@ These attributes control how the Voice Compass agent should react to a click. Th
 * `vc-click-journeyid`: the journey ID triggered by a click.
 * `vc-click-force-escalate`: boolean attribute set when a click should escalate a journey.
 * `vc-click-force-end`: boolean attribute set when a click should end a journey.
+* `vc-click-force-automate`: boolean attribute set when a click should mark a journey as automated.
 * `vc-click-bidirectional`: boolean attribute that turns on bidirectional mode on click.
 * `vc-click-payload`: a stringified object containing the payload at this step.
 
@@ -97,6 +99,7 @@ These attributes control how the Voice Compass agent should react to an invalid 
 * `vc-invalid-journeyid`: the journey ID triggered by an invalid form field.
 * `vc-invalid-force-escalate`: boolean attribute set when an invalid form field should escalate a journey.
 * `vc-invalid-force-end`: boolean attribute set when an invalid form field should end a journey.
+* `vc-invalid-force-automate`: boolean attribute set when an invalid form field should mark a journey as automated.
 * `vc-invalid-bidirectional`: boolean attribute that turns on bidirectional mode when a form field is invalid.
 * `vc-invalid-payload`: a stringified object containing the payload at this step.
 
@@ -156,6 +159,26 @@ const JourneyManager = () => {
 ## TypeScript
 
 This SDK is written in TypeScript and includes type definitions.
+
+## HTTP Alternative
+
+Using the SDK is not mandatory - you can run a Voice Compass experience using HTTP calls in the programming language and framework of your choice (e.g. mobile apps).
+
+* url: `https://journeys.voicecompass.ai/v1`
+* method: `POST`
+* request headers:
+  * `x-api-key`: the API key obtained from the setup code snippet
+  * `content-type: "application/json"`
+* as request body, send a JSON object with the following fields:
+  * `contactId: string`: extracted from the `cid` query parameter on your webpage or using tools like https://branch.io
+  * `journeyId: string`: journey ID obtained from the setup code snippet
+  * `journeyAssistantId: string`: assistant ID obtained from the setup code snippet
+  * `stepId: string`: the step ID
+  * `end: boolean` (optional): override the default step behavior and end the call
+  * `escalate: boolean` (optional): override the default step behavior and initiate handoff
+  * `automate: boolean` (optional): override the default step behavior and mark the journey as automated
+
+For subsequent step ID's, it is important that you maintain `contactId`, `journeyId` and `journeyAssistantId` properties the same from previous calls.
 
 ## License
 

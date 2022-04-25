@@ -34,6 +34,7 @@ interface StepData {
   end?: boolean; // Deprecated, use `forceEnd`
   forceEscalate?: boolean;
   escalate?: boolean; // Deprecated, use `forceEscalate`
+  forceAutomate?: boolean;
   bidirectional?: boolean;
   payload?: object;
 }
@@ -105,6 +106,10 @@ const readVcAttributes = (
       node.hasAttribute(`vc-${eventType}-force-end`) ||
       // Deprecated
       node.hasAttribute(`vc-${eventType}-end`),
+    forceAutomate:
+      node.hasAttribute(`vc-${eventType}-force-automate`) ||
+      // Deprecated
+      node.hasAttribute(`vc-${eventType}-automate`),
     bidirectional: node.hasAttribute(`vc-${eventType}-bidirectional`),
     payload: safeJsonParse(node.getAttribute(`vc-${eventType}-payload`)) || {},
   };
@@ -145,11 +150,12 @@ export const create = (config: Config): VoiceCompass => {
   let timeout: number | null = null;
 
   const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
-    const { end, forceEnd, escalate, forceEscalate, ...rest } = stepData;
+    const { end, forceEnd, escalate, forceEscalate, forceAutomate, ...rest } = stepData;
     const payload = {
       ...rest,
       end: forceEnd || end,
       escalate: forceEscalate || escalate,
+      automate: forceAutomate,
       contactId: config.contactId,
       botId,
       journeyId: stepData.journeyId || config.journeyId,
