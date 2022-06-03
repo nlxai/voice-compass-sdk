@@ -22,13 +22,14 @@ interface Config {
 // The journey manager object
 export interface VoiceCompass {
   updateStep: (data: StepData) => Promise<StepUpdate>;
-  getLastStepId: () => string | null;
+  getLastStepId: () => string | null | undefined;
   trackDomAnnotations: () => void;
   stopTrackingDomAnnotations: () => void;
+  appendEscalationButton: (wrap: any) => void;
 }
 
 interface StepData {
-  stepId: string;
+  stepId?: string;
   journeyId?: string;
   forceEnd?: boolean;
   end?: boolean; // Deprecated, use `forceEnd`
@@ -60,6 +61,9 @@ const safeJsonParse = (value: any): any => {
     return null;
   }
 };
+
+const createNewElement = (tag: string, prop: any) =>
+  Object.assign(document.createElement(tag), prop);
 
 const isDomElement = (node: any): node is HTMLElement => {
   return node instanceof HTMLElement;
@@ -145,7 +149,7 @@ export const create = (config: Config): VoiceCompass => {
     },
   });
 
-  let previousStepId: string | null = null;
+  let previousStepId: string | null | undefined = null;
 
   let timeout: number | null = null;
 
@@ -209,6 +213,37 @@ export const create = (config: Config): VoiceCompass => {
   };
 
   resetCallTimeout();
+
+  interface EscalationButtonProps {
+    wrap: HTMLElement | string,
+    text: string,
+  }
+
+  const appendEscalationButton = ({ wrap, text }: EscalationButtonProps) => {
+    if (!text)
+      throw new Error("Text isn't specified");
+
+    if (!wrap)
+      throw new Error("Wrapper element isn't specified or wasn't found");
+
+    const wrapElement = typeof wrap === "string" ? document.querySelector(wrap) : wrap;
+
+    if (!wrapElement)
+      throw new Error("Element couldn't be queried, use reference instead");
+
+    const customButton = createNewElement("button", {
+      textContent: text,
+      onclick() {
+        updateStep({
+          forceEscalate: true,
+        });
+      },
+    });
+
+    customButton.setAttribute("style", "background-color: #01c0f8; border-radius: 0.25rem; color: white; padding: 0.5rem 2rem;")
+
+    wrapElement.append(customButton);
+  };
 
   const updateStep = (stepData: StepData) => {
     if (stepData.stepId === previousStepId && config.preventRepeats) {
@@ -296,5 +331,6 @@ export const create = (config: Config): VoiceCompass => {
       document.removeEventListener("focusout", handleGlobalBlur);
       document.removeEventListener("focusin", handleGlobalFocus);
     },
+    appendEscalationButton,
   };
 };

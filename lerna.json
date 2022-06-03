@@ -1,9 +1,6 @@
 {
   "packages": [
-    "packages/core",
-    "packages/standalone",
-    "packages/ui-template",
-    "packages/ui-template-vue3"
+    "packages/*"
   ],
-  "version": "1.0.0-alpha.6"
+  "version": "1.0.0-alpha.7"
 }

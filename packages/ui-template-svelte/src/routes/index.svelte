@@ -8,7 +8,7 @@
   import Checklist from "../components/Checklist.svelte";
   import Rate from "../components/Rate.svelte";
   import { vc } from "../store";
-  import { create } from "@nlx-voice-compass/core";
+  import { create } from "@nlx-voice-compass/core/src";
 
   const vcClient = derived(vc, ($vc) =>
     $vc.mounted
@@ -21,7 +21,20 @@
       : undefined
   );
 
+  let buttonWrap;
   let compass = undefined;
+
+  const createEscalationButton = wrap => {
+    if (!wrap)
+      return;
+
+    $vcClient.appendEscalationButton({
+      wrap,
+      text: "Click me!"
+    });
+  };
+
+  $: createEscalationButton(buttonWrap);
 
   type Screen = "01" | "02" | "03" | "04";
 
@@ -152,6 +165,7 @@
       </Card>
     {/if}
   </Cards>
+  <div bind:this={buttonWrap}></div>
 {:else}
   <p>No customer ID provided.</p>
 {/if}
