@@ -20,8 +20,8 @@ interface Config {
 }
 
 interface EscalationButtonProps {
-  wrap: HTMLElement | string,
-  text: string,
+  container: HTMLElement | string,
+  label: string,
 }
 
 // The journey manager object
@@ -219,18 +219,18 @@ export const create = (config: Config): VoiceCompass => {
 
   resetCallTimeout();
 
-  const appendEscalationButton = ({ wrap, text }: EscalationButtonProps) => {
-    if (!text) {
+  const appendEscalationButton = ({ container, label }: EscalationButtonProps) => {
+    if (!label) {
       console.error("Text isn't specified");
       return;
     }
 
-    if (!wrap) {
+    if (!container) {
       console.error("Wrapper element isn't specified or wasn't found");
       return;
     }
 
-    const wrapElement = typeof wrap === "string" ? document.querySelector(wrap) : wrap;
+    const wrapElement = typeof container === "string" ? document.querySelector(container) : container;
 
     if (!wrapElement) {
       console.error("Element couldn't be queried, use reference instead");
@@ -238,7 +238,7 @@ export const create = (config: Config): VoiceCompass => {
     }
 
     const customButton = createNewElement("button", {
-      textContent: text,
+      textContent: label,
       onclick() {
         updateStep({
           forceEscalate: true,
