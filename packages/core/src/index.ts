@@ -19,13 +19,18 @@ interface Config {
   };
 }
 
+interface EscalationButtonProps {
+  wrap: HTMLElement | string,
+  text: string,
+}
+
 // The journey manager object
 export interface VoiceCompass {
   updateStep: (data: StepData) => Promise<StepUpdate>;
-  getLastStepId: () => string | null | undefined;
+  getLastStepId: () => string | null;
   trackDomAnnotations: () => void;
   stopTrackingDomAnnotations: () => void;
-  appendEscalationButton: (wrap: any) => void;
+  appendEscalationButton: (data: EscalationButtonProps) => void;
 }
 
 interface StepData {
@@ -149,7 +154,7 @@ export const create = (config: Config): VoiceCompass => {
     },
   });
 
-  let previousStepId: string | null | undefined = null;
+  let previousStepId: string | null = null;
 
   let timeout: number | null = null;
 
@@ -214,22 +219,23 @@ export const create = (config: Config): VoiceCompass => {
 
   resetCallTimeout();
 
-  interface EscalationButtonProps {
-    wrap: HTMLElement | string,
-    text: string,
-  }
-
   const appendEscalationButton = ({ wrap, text }: EscalationButtonProps) => {
-    if (!text)
-      throw new Error("Text isn't specified");
+    if (!text) {
+      console.error("Text isn't specified");
+      return;
+    }
 
-    if (!wrap)
-      throw new Error("Wrapper element isn't specified or wasn't found");
+    if (!wrap) {
+      console.error("Wrapper element isn't specified or wasn't found");
+      return;
+    }
 
     const wrapElement = typeof wrap === "string" ? document.querySelector(wrap) : wrap;
 
-    if (!wrapElement)
-      throw new Error("Element couldn't be queried, use reference instead");
+    if (!wrapElement) {
+      console.error("Element couldn't be queried, use reference instead");
+      return;
+    }
 
     const customButton = createNewElement("button", {
       textContent: text,
@@ -255,7 +261,7 @@ export const create = (config: Config): VoiceCompass => {
         warning: warning,
       });
     }
-    previousStepId = stepData.stepId;
+    previousStepId = stepData.stepId || null;
     resetCallTimeout();
     return sendUpdateRequest(stepData);
   };
