@@ -19,16 +19,22 @@ interface Config {
   };
 }
 
+interface EscalationButtonProps {
+  container: HTMLElement | string,
+  label: string,
+}
+
 // The journey manager object
 export interface VoiceCompass {
   updateStep: (data: StepData) => Promise<StepUpdate>;
   getLastStepId: () => string | null;
   trackDomAnnotations: () => void;
   stopTrackingDomAnnotations: () => void;
+  appendEscalationButton: (data: EscalationButtonProps) => void;
 }
 
 interface StepData {
-  stepId: string;
+  stepId?: string;
   journeyId?: string;
   forceEnd?: boolean;
   end?: boolean; // Deprecated, use `forceEnd`
@@ -60,6 +66,9 @@ const safeJsonParse = (value: any): any => {
     return null;
   }
 };
+
+const createNewElement = (tag: string, prop: any) =>
+  Object.assign(document.createElement(tag), prop);
 
 const isDomElement = (node: any): node is HTMLElement => {
   return node instanceof HTMLElement;
@@ -210,6 +219,38 @@ export const create = (config: Config): VoiceCompass => {
 
   resetCallTimeout();
 
+  const appendEscalationButton = ({ container, label }: EscalationButtonProps) => {
+    if (!label) {
+      console.error("Text isn't specified");
+      return;
+    }
+
+    if (!container) {
+      console.error("Wrapper element isn't specified or wasn't found");
+      return;
+    }
+
+    const wrapElement = typeof container === "string" ? document.querySelector(container) : container;
+
+    if (!wrapElement) {
+      console.error("Element couldn't be queried, use reference instead");
+      return;
+    }
+
+    const customButton = createNewElement("button", {
+      textContent: label,
+      onclick() {
+        updateStep({
+          forceEscalate: true,
+        });
+      },
+    });
+
+    customButton.setAttribute("style", "background-color: #01c0f8; border-radius: 0.25rem; color: white; padding: 0.5rem 2rem;")
+
+    wrapElement.append(customButton);
+  };
+
   const updateStep = (stepData: StepData) => {
     if (stepData.stepId === previousStepId && config.preventRepeats) {
       const warning = `Duplicate step ID detected, step update prevented: ${stepData.stepId}`;
@@ -220,7 +261,7 @@ export const create = (config: Config): VoiceCompass => {
         warning: warning,
       });
     }
-    previousStepId = stepData.stepId;
+    previousStepId = stepData.stepId || null;
     resetCallTimeout();
     return sendUpdateRequest(stepData);
   };
@@ -296,5 +337,6 @@ export const create = (config: Config): VoiceCompass => {
       document.removeEventListener("focusout", handleGlobalBlur);
       document.removeEventListener("focusin", handleGlobalFocus);
     },
+    appendEscalationButton,
   };
 };
