@@ -1,6 +1,7 @@
 {
-  "name": "@nlx-voice-compass/ui-template",
-  "description": "UI Template",
+  "name": "@nlx-voice-compass/ui-template-svelte",
+  "private": true,
+  "description": "Svelte UI Template",
   "version": "1.0.0-alpha.7",
   "type": "module",
   "scripts": {
