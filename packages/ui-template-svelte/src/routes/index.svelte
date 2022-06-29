@@ -168,4 +168,5 @@
   <div bind:this={buttonWrap}></div>
 {:else}
   <p>No customer ID provided.</p>
+  <div bind:this={buttonWrap}></div>
 {/if}

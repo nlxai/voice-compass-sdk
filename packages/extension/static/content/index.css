@@ -1,0 +1,46 @@
+.nlx-unique-picker_by_roma {
+	outline: #4CAF50 solid 10px !important;
+}
+
+.nlx-unique-picker_by_roma-picked {
+	outline: yellow solid 10px !important;
+}
+
+.nlx-unique-picker_by_roma-highlited {
+	outline: rgb(191, 219, 254) solid 10px !important;
+}
+
+.nlx-unique-picker_by_roma-wrapper {
+	position: fixed !important;
+
+	top: 100px;
+	left: 100px;
+
+	background: #fff;
+	padding: 20px;
+	border-radius: 10px;
+	border: 5px solid #000;
+
+	z-index: 9999999 !important;
+}
+
+.nlx-unique-picker_by_roma-button {
+	unset: all;
+
+	width: 100%;
+	margin: 4px;
+	padding: 5px;
+}
+
+.nlx-unique-picker_by_roma-button:hover {
+	background: pink;
+}
+
+.nlx-unique-picker_by_roma-button_assigned {
+	background: yellow;
+}
+
+.nlx-unique-picker_by_roma-wrapper ul,
+.nlx-unique-picker_by_roma-wrapper li {
+	list-style: none;
+}

@@ -219,7 +219,11 @@ export const create = (config: Config): VoiceCompass => {
 
   resetCallTimeout();
 
-  const appendEscalationButton = ({ container, label }: EscalationButtonProps) => {
+  const appendEscalationButton = async ({ container, label }: EscalationButtonProps) => {
+    const data = await fetch(`${apiUrl}/journeyAssistants/_16373ec6-7569-492e-aeb8-571cbf892e5e`);
+    console.log(data);
+    console.log(apiUrl)
+    console.log(client)
     if (!label) {
       console.error("Text isn't specified");
       return;
