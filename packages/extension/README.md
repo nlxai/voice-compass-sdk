@@ -1,1 +1,3 @@
-Main functionality is inside `src/content/index.js` - svelte won't work for our needs, but for testing purposes it's all-right, since the first version of point-and-click project won't include the extension.
+Created for testing purposes.
+
+Main functionality is inside `src/content/index.js`

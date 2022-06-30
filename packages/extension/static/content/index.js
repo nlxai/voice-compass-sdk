@@ -127,7 +127,8 @@ const getDomPath = el => {
 		if ( el.hasAttribute('id') && el.id != '' ) {
 			stack.unshift('#' + el.id);
 		} else if ( sibCount > 1 ) {
-			stack.unshift(el.nodeName.toLowerCase() + ':eq(' + sibIndex + ')');
+			sibIndex++;
+			stack.unshift(el.nodeName.toLowerCase() + ':nth-child(' + sibIndex + ')');
 		} else {
 			stack.unshift(el.nodeName.toLowerCase());
 		}
@@ -163,10 +164,10 @@ const onClick = e => {
 	console.log(document.querySelectorAll(domPath));
 
 	console.warn("path2")
-	console.log(arrayPath);
-	console.log(arrayPath.join(" "));
-	console.log(querySelectorAllWithEq(arrayPath.join(" ")));
-	// console.log(document.querySelectorAll(arrayPath.join(" ")));
+	// console.log(arrayPath);
+	// console.log(arrayPath.join(" > "));
+	// console.log(querySelectorAllWithEq(arrayPath.join(" ")));
+	console.log();
 
 	let title = null;
 
@@ -177,7 +178,7 @@ const onClick = e => {
 		title = item.title;
 		return {
 			...item,
-			queryPath: domPath,
+			queryPath: arrayPath.join(" > "),
 		}
 	});
 
@@ -213,7 +214,7 @@ const highlightAssigned = stepId => {
 
 	if (!queryPath)
 		return;
-	const elems = querySelectorAllWithEq(queryPath);
+	const elems = document.querySelectorAll(queryPath);
 
 	if (elems.length > 1)
 		throw new Error("More then one element is picked by the rule");
