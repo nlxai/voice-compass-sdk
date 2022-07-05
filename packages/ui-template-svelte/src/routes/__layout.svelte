@@ -1,11 +1,12 @@
 <script lang="ts">
   import { tw } from "twind";
   import { onMount } from "svelte";
-  import Header from "../components/Header.svelte";
-  import Footer from "../components/Footer.svelte";
-  import SplashScreen from "../components/SplashScreen.svelte";
+  import Header from "$lib/Header.svelte";
+  import Footer from "$lib/Footer.svelte";
+  import SplashScreen from "$lib/SplashScreen.svelte";
   import { setup } from "twind";
   import theme from "../theme";
+  import PointAndClick from "$lib/PointAndClick.svelte";
   import { vc } from "../store";
 
   let showSplash = true;
@@ -23,7 +24,7 @@
   });
 </script>
 
-{#if showSplash}
+{#if false && showSplash}
   <SplashScreen />
 {:else}
   <Header />
@@ -31,6 +32,7 @@
     <slot />
   </main>
   <Footer />
+  <PointAndClick />
 {/if}
 
 <style>

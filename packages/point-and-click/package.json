@@ -1,0 +1,22 @@
+{
+  "name": "@nlx-voice-compass/point-and-click",
+  "version": "1.0.0-alpha.8",
+  "description": "",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "scripts": {
+    "build": "node build.js",
+    "postinstall": "npm run build",
+    "check": "svelte-check"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "svelte": "^3.48.0",
+    "svelte-check": "^2.8.0"
+  },
+  "devDependencies": {
+    "svelte-preprocess": "^4.10.7",
+    "typescript": "^4.7.4"
+  }
+}

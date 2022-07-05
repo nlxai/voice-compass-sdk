@@ -3,14 +3,17 @@
   "version": "1.0.0-alpha.8",
   "description": "",
   "main": "lib/index.js",
+  "module": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "postinstall": "npm run build",
     "prepublish": "npm run build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@nlx-voice-compass/point-and-click": "^1.0.0-alpha.8",
     "axios": "^0.21.0"
   },
   "devDependencies": {

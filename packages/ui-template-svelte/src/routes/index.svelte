@@ -1,36 +1,35 @@
 <script lang="ts">
   import { derived } from "svelte/store";
-  import Cards from "../components/Cards.svelte";
-  import Card from "../components/Card.svelte";
-  import Button from "../components/Button.svelte";
+  import Cards from "$lib/Cards.svelte";
+  import Card from "$lib/Card.svelte";
+  import Button from "$lib/Button.svelte";
   import { noRequest, pending } from "../utils";
-  import SimpleButton from "../components/SimpleButton.svelte";
-  import Checklist from "../components/Checklist.svelte";
-  import Rate from "../components/Rate.svelte";
+  import SimpleButton from "$lib/SimpleButton.svelte";
+  import Checklist from "$lib/Checklist.svelte";
+  import Rate from "$lib/Rate.svelte";
   import { vc } from "../store";
   import { create } from "@nlx-voice-compass/core/src";
 
-  const vcClient = derived(vc, ($vc) =>
-    $vc.mounted
+  const vcClient = derived(vc, ($vc) => {
+    return $vc.mounted
       ? create({
           botId: $vc.botId,
           apiKey: $vc.apiKey,
           contactId: $vc.contactId || "",
           journeyId: "MyJourney",
         })
-      : undefined
-  );
+      : undefined;
+  });
 
   let buttonWrap;
   let compass = undefined;
 
-  const createEscalationButton = wrap => {
-    if (!wrap)
-      return;
+  const createEscalationButton = (container) => {
+    if (!container) return;
 
     $vcClient.appendEscalationButton({
-      wrap,
-      text: "Click me!"
+      container,
+      label: "Click me!",
     });
   };
 
@@ -122,7 +121,7 @@
 
 {#if $vc.contactId}
   <Cards {progress}>
-    {#if screen === '01'}
+    {#if screen === "01"}
       <Card title="Let's get started">
         <p>Make sure you have the following:</p>
         <Checklist
@@ -130,42 +129,46 @@
           options={checklist}
           on:change={(ev) => {
             checklistSelected = ev.detail;
-          }} />
+          }}
+        />
         <div>
           <Button
             disabled={checklist.length !== checklistSelected.length}
             on:click={() => {
-              screen = '02';
-            }}>
+              screen = "02";
+            }}
+          >
             Continue
           </Button>
         </div>
       </Card>
-    {:else if screen === '02'}
+    {:else if screen === "02"}
       <Card title="Success!">
         <Rate bind:value={rating} />
         <div>
           <Button
             disabled={!rating}
             on:click={submitRating}
-            status={ratingRequestStatus}>
+            status={ratingRequestStatus}
+          >
             Submit rating
           </Button>
           <SimpleButton
             on:click={() => {
-              screen = '01';
-            }}>
+              screen = "01";
+            }}
+          >
             Back
           </SimpleButton>
         </div>
       </Card>
-    {:else if screen === '03'}
+    {:else if screen === "03"}
       <Card title="Success!">
         <p>You can close the page.</p>
       </Card>
     {/if}
   </Cards>
-  <div bind:this={buttonWrap}></div>
+  <div bind:this={buttonWrap} />
 {:else}
   <p>No customer ID provided.</p>
 {/if}

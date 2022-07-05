@@ -1,4 +1,5 @@
 import axios from "axios";
+import "@nlx-voice-compass/point-and-click";
 
 // Initial configuration used when creating a journey manager
 interface Config {
@@ -126,6 +127,8 @@ const readVcAttributes = (
 
 export const create = (config: Config): VoiceCompass => {
   const botId = config.journeyAssistantId || config.botId;
+
+  // document.body.appendChild(document.createElement("point-and-click"));
 
   if (!config.contactId) {
     console.warn(
