@@ -40,7 +40,7 @@
   let drag: { start: [number, number]; current: [number, number] } | null =
     null;
 
-  let position: [number, number] = [40, 0];
+  let position: [number, number] = [0, 0];
 
   let activeStepId: string | null = null;
 
@@ -68,30 +68,15 @@
       .join(" > ");
   };
 
-  const isInsideComponent = (element: HTMLElement) => {
+  const isInsideComponent = (element: HTMLElement): boolean => {
     const containerWithCustomElementWrapper =
       document.querySelector("point-and-click") || container;
-    return (
+
+    return Boolean(
       containerWithCustomElementWrapper &&
-      (containerWithCustomElementWrapper.contains(element) ||
-        containerWithCustomElementWrapper === element)
+        (containerWithCustomElementWrapper.contains(element) ||
+          containerWithCustomElementWrapper === element)
     );
-  };
-
-  const ignorePopupClicks = (ev: any) => {
-    if (isInsideComponent(ev.target)) {
-      return true;
-    }
-
-    const pointAndClickCustomElement =
-      document.querySelector("point-and-click");
-    if (
-      pointAndClickCustomElement &&
-      (pointAndClickCustomElement.contains(ev.target) ||
-        pointAndClickCustomElement === ev.target)
-    ) {
-      return true;
-    }
   };
 
   const getLinks = (elem: HTMLElement): Link[] => {
@@ -128,7 +113,7 @@
   };
 
   const handleMouseOver = (ev: any) => {
-    if (ignorePopupClicks(ev)) {
+    if (isInsideComponent(ev.target)) {
       return;
     }
     hovered = ev.target;
@@ -138,7 +123,7 @@
   };
 
   const handleMouseOut = (ev: any) => {
-    if (ignorePopupClicks(ev)) {
+    if (isInsideComponent(ev.target)) {
       return;
     }
     if (hovered && !hovered.getAttribute("data-highlighted")) {
@@ -158,7 +143,7 @@
       }
     });
 
-    if (ignorePopupClicks(ev)) {
+    if (isInsideComponent(ev.target)) {
       return;
     }
 
@@ -264,7 +249,7 @@
   {#if activeStep}
     <div class="p-2">
       <button
-        on:click={() => {
+        on:click|stopPropagation={() => {
           activeStepId = null;
         }}
         class="flex items-center space-x-2"
@@ -371,7 +356,7 @@
     {#each steps as step}
       <div
         class="px-2 py-2 cursor-pointer"
-        on:click={() => {
+        on:click|stopPropagation={() => {
           activeStepId = step.key;
         }}
       >
