@@ -128,7 +128,11 @@ const readVcAttributes = (
 export const create = (config: Config): VoiceCompass => {
   const botId = config.journeyAssistantId || config.botId;
 
-  // document.body.appendChild(document.createElement("point-and-click"));
+  const mode = new URLSearchParams(window.location.search).get("mode");
+
+  if (mode === "compose") {
+    document.body.appendChild(document.createElement("point-and-click"));
+  }
 
   if (!config.contactId) {
     console.warn(
