@@ -131,7 +131,9 @@ export const create = (config: Config): VoiceCompass => {
   const mode = new URLSearchParams(window.location.search).get("mode");
 
   if (mode === "compose") {
-    document.body.appendChild(document.createElement("point-and-click"));
+    const pointAndClick = document.createElement("point-and-click");
+    (pointAndClick as any).apiKey = "abcd-1234";
+    document.body.appendChild(pointAndClick);
   }
 
   if (!config.contactId) {

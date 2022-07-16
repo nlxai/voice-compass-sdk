@@ -18,6 +18,8 @@
     links?: Link[];
   }
 
+  export let apiKey: string;
+
   let hovered: HTMLElement | null = null;
 
   let container: HTMLElement | null = null;
