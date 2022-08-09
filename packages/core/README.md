@@ -164,7 +164,7 @@ This SDK is written in TypeScript and includes type definitions.
 
 Using the SDK is not mandatory - you can run a Voice Compass experience using HTTP calls in the programming language and framework of your choice (e.g. mobile apps).
 
-* url: `https://journeys.voicecompass.ai/v1`
+* url: `https://journeys.voicecompass.ai/v1/track`
 * method: `POST`
 * request headers:
   * `x-api-key`: the API key obtained from the setup code snippet
