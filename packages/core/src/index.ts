@@ -21,8 +21,8 @@ interface Config {
 }
 
 interface EscalationButtonProps {
-  container: HTMLElement | string,
-  label: string,
+  container: HTMLElement | string;
+  label: string;
 }
 
 // The journey manager object
@@ -131,9 +131,11 @@ export const create = (config: Config): VoiceCompass => {
   const mode = new URLSearchParams(window.location.search).get("mode");
 
   if (mode === "compose") {
-    const pointAndClick = document.createElement("point-and-click");
-    (pointAndClick as any).apiKey = "abcd-1234";
-    document.body.appendChild(pointAndClick);
+    setTimeout(() => {
+      const pointAndClick = document.createElement("point-and-click");
+      document.body.appendChild(pointAndClick);
+      pointAndClick.setAttribute("apikey", "abcd-1234");
+    });
   }
 
   if (!config.contactId) {
@@ -168,7 +170,8 @@ export const create = (config: Config): VoiceCompass => {
   let timeout: number | null = null;
 
   const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
-    const { end, forceEnd, escalate, forceEscalate, forceAutomate, ...rest } = stepData;
+    const { end, forceEnd, escalate, forceEscalate, forceAutomate, ...rest } =
+      stepData;
     const payload = {
       ...rest,
       end: forceEnd || end,
@@ -228,7 +231,10 @@ export const create = (config: Config): VoiceCompass => {
 
   resetCallTimeout();
 
-  const appendEscalationButton = ({ container, label }: EscalationButtonProps) => {
+  const appendEscalationButton = ({
+    container,
+    label,
+  }: EscalationButtonProps) => {
     if (!label) {
       console.error("Text isn't specified");
       return;
@@ -239,7 +245,10 @@ export const create = (config: Config): VoiceCompass => {
       return;
     }
 
-    const wrapElement = typeof container === "string" ? document.querySelector(container) : container;
+    const wrapElement =
+      typeof container === "string"
+        ? document.querySelector(container)
+        : container;
 
     if (!wrapElement) {
       console.error("Element couldn't be queried, use reference instead");
@@ -255,7 +264,10 @@ export const create = (config: Config): VoiceCompass => {
       },
     });
 
-    customButton.setAttribute("style", "background-color: #01c0f8; border-radius: 0.25rem; color: white; padding: 0.5rem 2rem;")
+    customButton.setAttribute(
+      "style",
+      "background-color: #01c0f8; border-radius: 0.25rem; color: white; padding: 0.5rem 2rem;"
+    );
 
     wrapElement.append(customButton);
   };

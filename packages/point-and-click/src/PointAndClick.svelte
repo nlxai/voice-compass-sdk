@@ -6,7 +6,7 @@
     enabled: boolean;
   }
 
-  export let apiKey: string;
+  export let apikey: string;
 
   interface Link {
     enabled: boolean;
@@ -26,7 +26,7 @@
 
   let container: HTMLElement | null = null;
 
-  $: console.log(apiKey);
+  $: console.log(apikey);
 
   let steps: LinkableStep[] = [
     {

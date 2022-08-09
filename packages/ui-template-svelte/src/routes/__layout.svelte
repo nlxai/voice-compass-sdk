@@ -32,6 +32,7 @@
     <slot />
   </main>
   <Footer />
+  <PointAndClick />
 {/if}
 
 <style>
