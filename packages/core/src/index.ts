@@ -132,9 +132,9 @@ export const create = (config: Config): VoiceCompass => {
 
   if (mode === "compose") {
     setTimeout(() => {
-      const pointAndClick = document.createElement("point-and-click");
-      document.body.appendChild(pointAndClick);
-      pointAndClick.setAttribute("apikey", "abcd-1234");
+        const pointAndClick = document.createElement("point-and-click");
+        document.body.appendChild(pointAndClick);
+        pointAndClick.setAttribute("apikey", "abcd-1234");
     });
   }
 
