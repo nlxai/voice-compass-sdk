@@ -2,7 +2,7 @@
   "name": "@nlx-voice-compass/ui-template-svelte",
   "private": true,
   "description": "Svelte UI Template",
-  "version": "1.0.0-alpha.8",
+  "version": "1.0.0-alpha.9",
   "type": "module",
   "scripts": {
     "dev": "svelte-kit dev",
@@ -10,7 +10,7 @@
     "check": "svelte-check"
   },
   "dependencies": {
-    "@nlx-voice-compass/core": "^1.0.0-alpha.8",
+    "@nlx-voice-compass/core": "^1.0.0-alpha.9",
     "svelte-feather-icons": "^3.6.0",
     "twind": "^0.14.6"
   },
