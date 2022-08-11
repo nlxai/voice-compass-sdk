@@ -1,6 +1,6 @@
 {
   "name": "@nlx-voice-compass/core",
-  "version": "1.0.0-alpha.11",
+  "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@nlx-voice-compass/point-and-click": "^1.0.0-alpha.11",
+    "@nlx-voice-compass/point-and-click": "^1.0.0",
     "axios": "^0.21.0"
   },
   "devDependencies": {
