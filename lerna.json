@@ -1,6 +1,8 @@
 {
   "packages": [
-    "packages/*"
+    "packages/core",
+    "packages/point-and-click",
+    "packages/standalone"
   ],
   "version": "1.0.0-alpha.9"
 }
