@@ -20,5 +20,8 @@
     "svelte-preprocess": "^4.10.7",
     "typescript": "^4.7.4"
   },
-  "gitHead": "98838bbfadb929082b29aff7f80b2bfd008ffc8c"
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "c0718a8ae977e1fca434256499fab379b2f38217"
 }
