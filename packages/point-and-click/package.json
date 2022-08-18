@@ -6,7 +6,6 @@
   "module": "lib/index.js",
   "scripts": {
     "build": "node build.js",
-    "postinstall": "npm run build",
     "check": "svelte-check",
     "prepublish": "npm run build"
   },
