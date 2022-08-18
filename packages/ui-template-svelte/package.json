@@ -10,7 +10,7 @@
     "check": "svelte-check"
   },
   "dependencies": {
-    "@nlx-voice-compass/core": "^1.0.0-alpha.9",
+    "@nlx-voice-compass/core": "^1.0.0",
     "svelte-feather-icons": "^3.6.0",
     "twind": "^0.14.6"
   },
