@@ -6,7 +6,8 @@
     enabled: boolean;
   }
 
-  export let apikey: string;
+  // TODO: find strategy for obtaining this
+  const apiKey = "abcd-1234";
 
   interface Link {
     enabled: boolean;
@@ -25,8 +26,6 @@
   let hovered: HTMLElement | null = null;
 
   let container: HTMLElement | null = null;
-
-  $: console.log(apikey);
 
   let steps: LinkableStep[] = [
     {
