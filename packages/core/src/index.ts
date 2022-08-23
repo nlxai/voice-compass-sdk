@@ -1,5 +1,6 @@
 import axios from "axios";
-import "@nlx-voice-compass/point-and-click";
+// The point-and-click prototype is not used yet
+// import "@nlx-voice-compass/point-and-click";
 
 // Initial configuration used when creating a journey manager
 interface Config {
