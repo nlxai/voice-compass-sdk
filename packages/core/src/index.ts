@@ -13,6 +13,7 @@ interface Config {
   languageOverride?: string;
   preventRepeats?: boolean;
   contactId: string;
+  implementation?: "native";
   debug?: boolean;
   dev?: boolean;
   timeoutSettings?: {
@@ -179,6 +180,7 @@ export const create = (config: Config): VoiceCompass => {
       escalate: forceEscalate || escalate,
       automate: forceAutomate,
       contactId: config.contactId,
+      implementation: config.implementation,
       botId,
       journeyId: stepData.journeyId || config.journeyId,
       voice: config.voiceOverride,
