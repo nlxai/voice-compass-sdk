@@ -1,11 +1,14 @@
 {
   "name": "root",
   "private": true,
-  "devDependencies": {
-    "lerna": "^5.1.6"
-  },
   "scripts": {
-    "bootstrap": "lerna bootstrap && lerna run build",
+    "build": "lerna run build",
+    "watch": "chokidar \"packages/{core,point-and-click,standalone}/src/**/*\" -c \"npm run build\"",
+    "bootstrap": "lerna bootstrap && npm run build",
     "postinstall": "npm run bootstrap"
+  },
+  "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "lerna": "^5.1.6"
   }
 }

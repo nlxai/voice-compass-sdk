@@ -1,6 +1,5 @@
-import axios from "axios";
 // The point-and-click prototype is not used yet
-// import "@nlx-voice-compass/point-and-click";
+import "@nlx-voice-compass/point-and-click";
 
 // Initial configuration used when creating a journey manager
 interface Config {
@@ -130,13 +129,14 @@ const readVcAttributes = (
 export const create = (config: Config): VoiceCompass => {
   const botId = config.journeyAssistantId || config.botId;
 
-  const mode = new URLSearchParams(window.location.search).get("mode");
+  const mode =
+    "compose" || new URLSearchParams(window.location.search).get("mode");
 
   if (mode === "compose") {
     setTimeout(() => {
-        const pointAndClick = document.createElement("point-and-click");
-        document.body.appendChild(pointAndClick);
-        pointAndClick.setAttribute("apikey", "abcd-1234");
+      const pointAndClick = document.createElement("point-and-click");
+      document.body.appendChild(pointAndClick);
+      pointAndClick.setAttribute("apikey", "abcd-1234");
     });
   }
 
@@ -159,14 +159,6 @@ export const create = (config: Config): VoiceCompass => {
         : prodApiUrl
       : legacyApiUrl;
 
-  const client = axios.create({
-    baseURL: apiUrl,
-    timeout: 15000,
-    headers: {
-      "x-api-key": config.apiKey,
-    },
-  });
-
   let previousStepId: string | null = null;
 
   let timeout: number | null = null;
@@ -174,6 +166,7 @@ export const create = (config: Config): VoiceCompass => {
   const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
     const { end, forceEnd, escalate, forceEscalate, forceAutomate, ...rest } =
       stepData;
+
     const payload = {
       ...rest,
       end: forceEnd || end,
@@ -187,16 +180,22 @@ export const create = (config: Config): VoiceCompass => {
       language: config.languageOverride,
     };
 
-    return client
-      .post<StepUpdate>("/track", payload)
-      .then((res) => {
+    return fetch(`${apiUrl}/track`, {
+      method: "POST",
+      headers: {
+        "x-api-key": config.apiKey,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((res: StepUpdate) => {
         if (config.debug) {
           console.info(
             `${String.fromCodePoint(0x02713)} step: ${payload.stepId}`,
             payload
           );
         }
-        return res.data;
+        return res;
       })
       .catch((err: Error) => {
         if (config.debug) {
