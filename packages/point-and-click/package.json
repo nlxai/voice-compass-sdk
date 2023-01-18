@@ -1,6 +1,6 @@
 {
   "name": "@nlx-voice-compass/point-and-click",
-  "version": "1.0.1-alpha.1",
+  "version": "2.0.0-alpha.0",
   "description": "",
   "main": "lib/index.js",
   "module": "lib/index.js",
