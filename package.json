@@ -5,6 +5,7 @@
     "build": "lerna run build",
     "watch": "chokidar \"packages/{core,point-and-click,standalone}/src/**/*\" -c \"npm run build\"",
     "bootstrap": "lerna bootstrap && npm run build",
+    "publish": "lerna publish",
     "postinstall": "npm run bootstrap"
   },
   "devDependencies": {
