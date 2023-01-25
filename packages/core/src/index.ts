@@ -129,8 +129,7 @@ const readVcAttributes = (
 export const create = (config: Config): VoiceCompass => {
   const botId = config.journeyAssistantId || config.botId;
 
-  const mode =
-    "compose" || new URLSearchParams(window.location.search).get("mode");
+  const mode = new URLSearchParams(window.location.search).get("mode");
 
   if (mode === "compose") {
     setTimeout(() => {
