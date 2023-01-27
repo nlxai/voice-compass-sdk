@@ -6,11 +6,6 @@
     enabled: boolean;
   }
 
-  // TODO: find strategy for obtaining this
-  export const apiKey = "abcd-1234";
-
-  $: console.log(apiKey);
-
   interface Link {
     enabled: boolean;
     tagName: Toggleable<string>;
@@ -18,6 +13,15 @@
     id?: Toggleable<string>;
     index?: Toggleable<number>;
   }
+
+  let token: string = "";
+
+  onMount(() => {
+    const params = new URLSearchParams(document.location.search);
+    token = params.get("token") || "";
+    console.log(token);
+  });
+
 
   interface LinkableStep {
     key: string;

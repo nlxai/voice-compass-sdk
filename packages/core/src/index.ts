@@ -1,13 +1,19 @@
 // The point-and-click prototype is not used yet
-import "@nlx-voice-compass/point-and-click";
+import { toSelector, type Trigger } from "@nlx-voice-compass/point-and-click";
+import { type StepData } from "./types";
+import {
+  isDomElement,
+  isInputElement,
+  inputValidationError,
+  readVcAttributes,
+} from "./dom";
 
 // Initial configuration used when creating a journey manager
 interface Config {
   apiVersion?: "v1" | "v2";
   apiKey: string;
-  journeyAssistantId?: string;
-  botId?: string; // Deprecated, use `journeyAssistantId`
-  journeyId?: string;
+  journeyId: string;
+  journeyAssistantId: string;
   voiceOverride?: string;
   languageOverride?: string;
   preventRepeats?: boolean;
@@ -32,19 +38,9 @@ export interface VoiceCompass {
   getLastStepId: () => string | null;
   trackDomAnnotations: () => void;
   stopTrackingDomAnnotations: () => void;
+  runWizard: () => void;
+  stopWizard: () => void;
   appendEscalationButton: (data: EscalationButtonProps) => void;
-}
-
-interface StepData {
-  stepId?: string;
-  journeyId?: string;
-  forceEnd?: boolean;
-  end?: boolean; // Deprecated, use `forceEnd`
-  forceEscalate?: boolean;
-  escalate?: boolean; // Deprecated, use `forceEscalate`
-  forceAutomate?: boolean;
-  bidirectional?: boolean;
-  payload?: object;
 }
 
 export interface StepUpdate {
@@ -60,94 +56,58 @@ const devApiUrl = "https://dev.journeys.voicecompass.ai/v1";
 
 const prodApiUrl = "https://journeys.voicecompass.ai/v1";
 
-const safeJsonParse = (value: any): any => {
-  try {
-    const json = JSON.parse(String(value));
-    return json;
-  } catch (err) {
-    return null;
-  }
-};
-
 const createNewElement = (tag: string, prop: any) =>
   Object.assign(document.createElement(tag), prop);
 
-const isDomElement = (node: any): node is HTMLElement => {
-  return node instanceof HTMLElement;
-};
+interface LiveStep {
+  key: string;
+  trigger: null | Trigger;
+}
 
-const isInputElement = (node: any): node is HTMLInputElement => {
-  return node instanceof HTMLInputElement;
-};
-
-const inputValidationError = (inputNode: HTMLInputElement): null | string => {
-  const value = inputNode.value;
-  const type = inputNode.type;
-  if (type === "email") {
-    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-      value
-    )
-      ? null
-      : "Must be a valid email";
-  }
-  if (inputNode.pattern) {
-    return new RegExp(inputNode.pattern).test(value)
-      ? null
-      : "Must match pattern";
-  }
-  return null;
-};
-
-const readVcAttributes = (
-  node: HTMLElement,
-  eventType: string
-): StepData | null => {
-  const stepId = node.getAttribute(`vc-${eventType}-stepid`);
-  if (!stepId) {
-    return null;
-  }
-  return {
-    stepId,
-    journeyId: node.getAttribute(`vc-${eventType}-journeyid`) || undefined,
-    forceEscalate:
-      node.hasAttribute(`vc-${eventType}-force-escalate`) ||
-      // Deprecated
-      node.hasAttribute(`vc-${eventType}-escalate`),
-    forceEnd:
-      node.hasAttribute(`vc-${eventType}-force-end`) ||
-      // Deprecated
-      node.hasAttribute(`vc-${eventType}-end`),
-    forceAutomate:
-      node.hasAttribute(`vc-${eventType}-force-automate`) ||
-      // Deprecated
-      node.hasAttribute(`vc-${eventType}-automate`),
-    bidirectional: node.hasAttribute(`vc-${eventType}-bidirectional`),
-    payload: safeJsonParse(node.getAttribute(`vc-${eventType}-payload`)) || {},
-  };
+export const fetchLiveSteps = ({
+  apiUrl,
+  apiKey,
+  journeyId,
+  journeyAssistantId,
+}: {
+  apiUrl: string;
+  apiKey: string;
+  journeyId: string;
+  journeyAssistantId: string;
+}): Promise<LiveStep[]> => {
+  return fetch(
+    `${apiUrl}/liveJourneyTriggers/${journeyId}?journeyAssistantId=${journeyAssistantId}`,
+    {
+      method: "GET",
+      headers: {
+        "x-api-key": apiKey,
+      },
+    }
+  )
+    .then((res) => res.json())
+    .then((res) => res.steps);
 };
 
 export const create = (config: Config): VoiceCompass => {
-  const botId = config.journeyAssistantId || config.botId;
+  const botId = config.journeyAssistantId;
 
-  const mode = new URLSearchParams(window.location.search).get("mode");
+  // Defined using a literal so typos can be avoided during checking
+  const mode: "compose" | null =
+    new URLSearchParams(window.location.search).get("mode") === "compose"
+      ? "compose"
+      : null;
 
   if (mode === "compose") {
     setTimeout(() => {
-      const pointAndClick = document.createElement("point-and-click");
+      const pointAndClick: any = document.createElement("point-and-click");
       document.body.appendChild(pointAndClick);
-      pointAndClick.setAttribute("apikey", "abcd-1234");
+      pointAndClick.apiKey = config.apiKey;
     });
   }
 
   if (!config.contactId) {
     console.warn(
       'No contact ID provided. Please call the Voice Compass client `create` method with a `contactId` field extracted from the URL. Example code: `new URLSearchParams(window.location.search).get("cid")`'
-    );
-  }
-
-  if (config.botId) {
-    console.warn(
-      "The `botId` configuration option has been renamed to `journeyAssistantId`."
     );
   }
 
@@ -163,13 +123,12 @@ export const create = (config: Config): VoiceCompass => {
   let timeout: number | null = null;
 
   const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
-    const { end, forceEnd, escalate, forceEscalate, forceAutomate, ...rest } =
-      stepData;
+    const { forceEnd, forceEscalate, forceAutomate, ...rest } = stepData;
 
     const payload = {
       ...rest,
-      end: forceEnd || end,
-      escalate: forceEscalate || escalate,
+      end: forceEnd,
+      escalate: forceEscalate,
       automate: forceAutomate,
       contactId: config.contactId,
       implementation: config.implementation,
@@ -232,6 +191,17 @@ export const create = (config: Config): VoiceCompass => {
 
   resetCallTimeout();
 
+  let liveSteps: LiveStep[] = [];
+
+  fetchLiveSteps({
+    apiUrl,
+    apiKey: config.apiKey,
+    journeyId: config.journeyId,
+    journeyAssistantId: config.journeyAssistantId,
+  }).then((steps) => {
+    liveSteps = steps;
+  });
+
   const appendEscalationButton = ({
     container,
     label,
@@ -288,7 +258,7 @@ export const create = (config: Config): VoiceCompass => {
     return sendUpdateRequest(stepData);
   };
 
-  const handleGlobalClick = (ev: any) => {
+  const handleGlobalClickForAnnotations = (ev: any) => {
     let node = ev.target;
     while (node && node !== document.body) {
       if (isDomElement(node)) {
@@ -304,7 +274,7 @@ export const create = (config: Config): VoiceCompass => {
     }
   };
 
-  const handleGlobalBlur = (ev: any) => {
+  const handleGlobalBlurForAnnotations = (ev: any) => {
     let node = ev.target;
     while (node && node !== document.body) {
       if (isInputElement(node)) {
@@ -323,7 +293,7 @@ export const create = (config: Config): VoiceCompass => {
     }
   };
 
-  const handleGlobalFocus = (ev: any) => {
+  const handleGlobalFocusForAnnotations = (ev: any) => {
     let node = ev.target;
     while (node && node !== document.body) {
       if (isInputElement(node)) {
@@ -342,22 +312,49 @@ export const create = (config: Config): VoiceCompass => {
     }
   };
 
+  const handleGlobalClickForWizard = (ev: any) => {
+    if (mode === "compose") {
+      // return;
+    }
+    liveSteps.forEach((step) => {
+      if (!step.trigger || step.trigger.event !== "click") {
+        return;
+      }
+      const selector = toSelector(step.trigger.path);
+      const node = document.querySelector(selector);
+      if (!node) {
+        return;
+      }
+      if (node.contains(ev.target) || node === ev.target) {
+        updateStep({
+          stepId: step.key,
+        });
+      }
+    });
+  };
+
   return {
     updateStep,
     getLastStepId: () => {
       return previousStepId;
     },
     trackDomAnnotations: () => {
-      document.addEventListener("click", handleGlobalClick);
+      document.addEventListener("click", handleGlobalClickForAnnotations);
       // The 'blur' even does not bubble, hence 'focusout'
-      document.addEventListener("focusout", handleGlobalBlur);
+      document.addEventListener("focusout", handleGlobalBlurForAnnotations);
       // The 'focus' even does not bubble, hence 'focusin'
-      document.addEventListener("focusin", handleGlobalFocus);
+      document.addEventListener("focusin", handleGlobalFocusForAnnotations);
     },
     stopTrackingDomAnnotations: () => {
-      document.removeEventListener("click", handleGlobalClick);
-      document.removeEventListener("focusout", handleGlobalBlur);
-      document.removeEventListener("focusin", handleGlobalFocus);
+      document.removeEventListener("click", handleGlobalClickForAnnotations);
+      document.removeEventListener("focusout", handleGlobalBlurForAnnotations);
+      document.removeEventListener("focusin", handleGlobalFocusForAnnotations);
+    },
+    runWizard: () => {
+      document.addEventListener("click", handleGlobalClickForWizard);
+    },
+    stopWizard: () => {
+      document.removeEventListener("click", handleGlobalClickForWizard);
     },
     appendEscalationButton,
   };
