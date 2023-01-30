@@ -314,7 +314,7 @@ export const create = (config: Config): VoiceCompass => {
 
   const handleGlobalClickForWizard = (ev: any) => {
     if (mode === "compose") {
-      // return;
+      return;
     }
     liveSteps.forEach((step) => {
       if (!step.trigger || step.trigger.event !== "click") {
