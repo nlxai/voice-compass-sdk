@@ -22,7 +22,9 @@ export const updateSteps = ({
       },
       body: JSON.stringify({ steps }),
     }
-  ).then((res) => res.json());
+  )
+    .then((res) => res.json())
+    .then((res) => res.steps);
 };
 
 export const fetchSteps = async ({

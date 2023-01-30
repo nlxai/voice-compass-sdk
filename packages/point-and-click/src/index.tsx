@@ -6,13 +6,7 @@ import {
   useCallback,
   type StateUpdater,
 } from "preact/hooks";
-import {
-  SimpleCheckbox,
-  BackButton,
-  RemoveButton,
-  SimpleSelect,
-  Switch,
-} from "./ui";
+import { BackButton, RemoveButton, SimpleSelect, Switch } from "./ui";
 import { type Step, type Link } from "./types";
 import { fetchSteps, updateSteps } from "./api";
 import { getLinks, toSelector } from "./logic";
@@ -28,6 +22,8 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
   const [savedSteps, setSavedSteps] = useState<"loading" | "error" | Step[]>(
     "loading"
   );
+
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const [stepsDraft, setStepsDraft] = useState<null | Step[]>(null);
 
@@ -54,11 +50,11 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
 
   return (
     <div
-      class="w-96 fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg"
+      class="w-96 max-h-[280px] overflow-auto fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg"
       style={`z-index: 100000; transform: translate3d(${drag.position[0]}px, ${drag.position[1]}px, 0)`}
     >
       <div
-        class="px-2 py-1 cursor-move text-base py-1 bg-black rounded-t-lg text-white flex items-center justify-between"
+        class="px-2 py-1 cursor-move sticky top-0 text-base py-1 bg-black rounded-t-lg text-white flex items-center justify-between"
         onMouseDown={drag.onMouseDown}
       >
         <p>Journey Wizard</p>
@@ -68,21 +64,29 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
             onClick={
               stepsDraft
                 ? () => {
+                    setIsSaving(true);
                     updateSteps({
                       journeyId: journeyId.current,
                       token: token.current,
                       steps: stepsDraft,
                       apiKey: props.apiKey,
-                    }).then((res) => {
-                      console.log(res);
-                      setStepsDraft(null);
-                    });
+                    })
+                      .then((res) => {
+                        setStepsDraft(null);
+                        setSavedSteps(res);
+                      })
+                      .catch((err) => {
+                        console.warn(err);
+                      })
+                      .finally(() => {
+                        setIsSaving(false);
+                      });
                   }
                 : undefined
             }
-            disabled={!stepsDraft}
+            disabled={!stepsDraft || isSaving}
           >
-            Save
+            {isSaving ? "Saving..." : "Save"}
           </button>
         </div>
       </div>
@@ -90,7 +94,10 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
         {savedSteps === "loading" ? (
           <p class="p-2 text-xs text-gray-600">Loading steps...</p>
         ) : savedSteps === "error" ? (
-          <p class="p-2 text-xs text-red-600">Something went wrong. Please open the page again from the journey edit page on the Voice Compass Portal.</p>
+          <p class="p-2 text-xs text-red-600">
+            Something went wrong. Please open the page again from the journey
+            edit page on the Voice Compass Portal.
+          </p>
         ) : editedStep ? (
           <div class="p-2 space-y-2">
             <StepEditor
@@ -407,15 +414,24 @@ const StepSummary: FC<{ step: Step; onSelect: () => void }> = ({
   onSelect,
 }) => (
   <button
-    class="block text-left w-full px-2 py-2 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+    class="flex items-center justify-between text-left w-full px-2 py-2 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
     onClick={onSelect}
   >
-    {step.name ? (
-      <h2 class="text-base font-medium">{step.name}</h2>
-    ) : (
-      <h2 class="text-base font-medium text-gray-500">Untitled</h2>
+    <div>
+      {step.name ? (
+        <h2 class="text-base font-medium">{step.name}</h2>
+      ) : (
+        <h2 class="text-base font-medium text-gray-500">Untitled</h2>
+      )}
+      <p class="font-mono text-xs text-gray-500">{step.key}</p>
+    </div>
+    {step.trigger && (
+      <span class="inline-block flex-none w-6 h-6 text-gray-400">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"></path>
+        </svg>
+      </span>
     )}
-    <p class="font-mono text-xs text-gray-500">{step.key}</p>
   </button>
 );
 
