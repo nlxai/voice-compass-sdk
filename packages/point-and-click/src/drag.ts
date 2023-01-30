@@ -57,10 +57,14 @@ export const useDrag = () => {
 
   const onBodyMouseMove = useCallback(
     (e: MouseEvent) => {
-      setD((prev) => ({
-        ...prev,
-        drag: prev.drag && { ...prev.drag, current: [e.clientX, e.clientY] },
-      }));
+      setD((prev) =>
+        prev.drag
+          ? {
+              ...prev,
+              drag: { ...prev.drag, current: [e.clientX, e.clientY] },
+            }
+          : prev
+      );
     },
     [setD]
   );
