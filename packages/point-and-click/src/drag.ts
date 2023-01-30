@@ -55,8 +55,11 @@ export const useDrag = () => {
     []
   );
 
+  const isDragging = Boolean(d.drag);
+
   const onBodyMouseMove = useCallback(
     (e: MouseEvent) => {
+      if (!isDragging) return;
       setD((prev) =>
         prev.drag
           ? {
@@ -66,7 +69,7 @@ export const useDrag = () => {
           : prev
       );
     },
-    [setD]
+    [setD, isDragging]
   );
 
   const onMouseDown = useCallback(
@@ -93,12 +96,17 @@ export const useDrag = () => {
 
   useEffect(() => {
     document.body.addEventListener("mousemove", onBodyMouseMove);
-    document.body.addEventListener("mouseup", onBodyMouseUp);
     return () => {
       document.body.removeEventListener("mousemove", onBodyMouseMove);
+    };
+  }, [onBodyMouseMove]);
+
+  useEffect(() => {
+    document.body.addEventListener("mouseup", onBodyMouseUp);
+    return () => {
       document.body.removeEventListener("mouseup", onBodyMouseUp);
     };
-  }, []);
+  }, [onBodyMouseUp]);
 
   return {
     position: calcPosition(d),

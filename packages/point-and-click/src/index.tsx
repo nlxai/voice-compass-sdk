@@ -7,7 +7,7 @@ import {
   type StateUpdater,
 } from "preact/hooks";
 import { BackButton, RemoveButton, SimpleSelect, Switch } from "./ui";
-import { type Step, type Link } from "./types";
+import { type Step, type Link, type Event } from "./types";
 import { fetchSteps, updateSteps } from "./api";
 import { getLinks, toSelector } from "./logic";
 import { useDrag } from "./drag";
@@ -113,8 +113,8 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
                       steps.map((s) =>
                         s.key === editedStepKey
                           ? typeof updater === "function"
-                            ? (updater(s) || s)
-                            : (updater || s)
+                            ? updater(s) || s
+                            : updater || s
                           : s
                       )
                     )
@@ -152,6 +152,12 @@ export const isInsideComponent = (element: HTMLElement): boolean => {
         containerWithCustomElementWrapper === element)
   );
 };
+
+const eventOptions: { label: string; value: Event }[] = [
+  { value: "click", label: "Click" },
+  { value: "invalid", label: "Invalid" },
+  { value: "inserted", label: "Inserted" },
+];
 
 const StepEditor: FC<{
   step: Step;
@@ -266,17 +272,16 @@ const StepEditor: FC<{
             <SimpleSelect
               label="Event"
               value={step.trigger.event}
-              options={[
-                { value: "click", label: "Click" },
-                { value: "invalid", label: "Invalid" },
-                { value: "inserted", label: "Inserted" },
-              ]}
-              onChange={(ev) => {
+              options={eventOptions}
+              onChange={(ev: Event) => {
                 setStep(
                   (prev) =>
                     prev && {
                       ...prev,
-                      event: ev,
+                      trigger: prev.trigger && {
+                        ...prev.trigger,
+                        event: ev,
+                      },
                     }
                 );
               }}

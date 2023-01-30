@@ -17,7 +17,9 @@ export interface Link {
   index?: Toggleable<number>;
 }
 
+export type Event = "click" | "invalid" | "inserted";
+
 export interface Trigger {
-  event: "click";
+  event: Event;
   path: Link[];
 }

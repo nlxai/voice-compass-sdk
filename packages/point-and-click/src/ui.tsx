@@ -54,24 +54,29 @@ export const RemoveButton: FC<{ onClick: () => void }> = ({ onClick }) => (
   </button>
 );
 
-export const SimpleSelect: FC<{
+export const SimpleSelect = <Value extends unknown>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
   label: string;
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (val: string) => void;
-}> = ({ label, value, options, onChange }) => {
+  value: Value;
+  options: { value: Value; label: string }[];
+  onChange: (val: Value) => void;
+}) => {
   return (
     <div class="text-xs">
       <span class="text-gray-600">{label}:</span>{" "}
       <select
         class="bg-gray-100 px-1 text-gray-800 !cursor-pointer hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-        value={value}
+        value={String(value)}
         onChange={(ev: any) => {
           onChange(ev.target.value);
         }}
       >
         {options.map((option) => (
-          <option value={option.value}>{option.label}</option>
+          <option value={String(option.value)}>{option.label}</option>
         ))}
       </select>
     </div>
