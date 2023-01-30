@@ -27,7 +27,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
 
   const [stepsDraft, setStepsDraft] = useState<null | Step[]>(null);
 
-  const [editedStep, setEditedStep] = useState<null | Step>(null);
+  const [editedStepKey, setEditedStepKey] = useState<null | string>(null);
 
   const drag = useDrag();
 
@@ -98,31 +98,44 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
             Something went wrong. Please open the page again from the journey
             edit page on the Voice Compass Portal.
           </p>
-        ) : editedStep ? (
-          <div class="p-2 space-y-2">
-            <StepEditor
-              step={editedStep}
-              setStep={setEditedStep}
-              onBackButtonClick={() => {
-                setStepsDraft(
-                  (stepsDraft || savedSteps).map((step) =>
-                    step.key === editedStep.key ? editedStep : step
-                  )
-                );
-                setEditedStep(null);
-              }}
-            />
-          </div>
         ) : (
-          (stepsDraft || savedSteps).map((step) => (
-            <StepSummary
-              key={step.key}
-              step={step}
-              onSelect={() => {
-                setEditedStep(step);
-              }}
-            />
-          ))
+          (() => {
+            const steps = stepsDraft || savedSteps;
+            const editedStep =
+              editedStepKey && steps.find((s) => s.key === editedStepKey);
+
+            return editedStep ? (
+              <div class="p-2 space-y-2">
+                <StepEditor
+                  step={editedStep}
+                  setStep={(updater) =>
+                    setStepsDraft(
+                      steps.map((s) =>
+                        s.key === editedStepKey
+                          ? typeof updater === "function"
+                            ? (updater(s) || s)
+                            : (updater || s)
+                          : s
+                      )
+                    )
+                  }
+                  onBackButtonClick={() => {
+                    setEditedStepKey(null);
+                  }}
+                />
+              </div>
+            ) : (
+              (stepsDraft || savedSteps).map((step) => (
+                <StepSummary
+                  key={step.key}
+                  step={step}
+                  onSelect={() => {
+                    setEditedStepKey(step.key);
+                  }}
+                />
+              ))
+            );
+          })()
         )}
       </div>
     </div>
@@ -276,15 +289,18 @@ const StepEditor: FC<{
                     key={index}
                     value={link}
                     onChange={(newLink) => {
-                      setStep({
-                        ...step,
-                        trigger: step.trigger && {
-                          ...step.trigger,
-                          path: step.trigger.path.map((link, i) =>
-                            i === index ? newLink : link
-                          ),
-                        },
-                      });
+                      setStep(
+                        (prev) =>
+                          prev && {
+                            ...step,
+                            trigger: step.trigger && {
+                              ...step.trigger,
+                              path: step.trigger.path.map((link, i) =>
+                                i === index ? newLink : link
+                              ),
+                            },
+                          }
+                      );
                     }}
                   />
                 );
@@ -292,10 +308,13 @@ const StepEditor: FC<{
             </div>
             <RemoveButton
               onClick={() => {
-                setStep({
-                  ...step,
-                  trigger: null,
-                });
+                setStep(
+                  (prev) =>
+                    prev && {
+                      ...prev,
+                      trigger: null,
+                    }
+                );
               }}
             />
           </div>
