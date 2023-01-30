@@ -8,7 +8,7 @@ export const toSelector = (links: Link[]): string => {
       }
       return [
         link.tagName.enabled ? link.tagName.value : "*",
-        link.id && link.id.enabled ? link.id.value : undefined,
+        link.id && link.id.enabled ? `#${link.id.value}` : undefined,
         ...link.classList
           .filter((val) => val.enabled)
           .map((val) => `.${val.value}`),
