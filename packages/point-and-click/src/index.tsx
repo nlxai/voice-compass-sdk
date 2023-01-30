@@ -155,8 +155,8 @@ export const isInsideComponent = (element: HTMLElement): boolean => {
 
 const eventOptions: { label: string; value: Event }[] = [
   { value: "click", label: "Click" },
-  { value: "invalid", label: "Invalid" },
-  { value: "inserted", label: "Inserted" },
+  { value: "invalid", label: "Invalid form input" },
+  { value: "inserted", label: "Appear on page" },
 ];
 
 const StepEditor: FC<{
@@ -265,7 +265,12 @@ const StepEditor: FC<{
       </div>
       <hr />
       <div class="space-y-2">
-        <p class="text-sm font-medium">Trigger</p>
+        <p class="text-sm font-medium flex items-center space-x-1">
+          <span class="w-4 h-4 inline-block">
+            <TriggerIcon />
+          </span>
+          <span>Trigger</span>
+        </p>
 
         {step.trigger ? (
           <div class="space-y-2">
@@ -433,6 +438,12 @@ const LinkEditor: FC<{ value: Link; onChange: (val: Link) => void }> = ({
   );
 };
 
+const TriggerIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"></path>
+  </svg>
+);
+
 const StepSummary: FC<{ step: Step; onSelect: () => void }> = ({
   step,
   onSelect,
@@ -451,9 +462,7 @@ const StepSummary: FC<{ step: Step; onSelect: () => void }> = ({
     </div>
     {step.trigger && (
       <span class="inline-block flex-none w-6 h-6 text-gray-400">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"></path>
-        </svg>
+        <TriggerIcon />
       </span>
     )}
   </button>
