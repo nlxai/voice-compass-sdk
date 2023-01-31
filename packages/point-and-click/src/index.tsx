@@ -7,7 +7,7 @@ import {
   type StateUpdater,
 } from "preact/hooks";
 import { BackButton, RemoveButton, SimpleSelect, Switch } from "./ui";
-import { type Step, type Link, type Event } from "./types";
+import { type Step, type Link, type Event, type Bounding } from "./types";
 import { fetchSteps, updateSteps } from "./api";
 import { getLinks, toSelector } from "./logic";
 import { useDrag } from "./drag";
@@ -18,6 +18,7 @@ export { toSelector } from "./logic";
 const Wizard: FC<{ apiKey: string }> = (props) => {
   const token = useRef<string>("");
   const journeyId = useRef<string>("");
+  const containerRef = useRef<any>(null);
 
   const [savedSteps, setSavedSteps] = useState<"loading" | "error" | Step[]>(
     "loading"
@@ -30,6 +31,9 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
   const [editedStepKey, setEditedStepKey] = useState<null | string>(null);
 
   const drag = useDrag();
+
+  const getParentBound = () =>
+    containerRef?.current?.getBoundingClientRect();
 
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
@@ -52,6 +56,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
     <div
       class="w-96 h-[200px] overflow-auto fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg"
       style={`z-index: 100000; transform: translate3d(${drag.position[0]}px, ${drag.position[1]}px, 0)`}
+      ref={containerRef}
     >
       <div
         class="relative z-30 px-2 py-1 cursor-move sticky top-0 text-base py-1 bg-black rounded-t-lg text-white flex items-center justify-between"
@@ -122,6 +127,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
                   onBackButtonClick={() => {
                     setEditedStepKey(null);
                   }}
+                  getParentBound={getParentBound}
                 />
               </div>
             ) : (
@@ -162,8 +168,9 @@ const eventOptions: { label: string; value: Event }[] = [
 const StepEditor: FC<{
   step: Step;
   setStep: StateUpdater<Step | null>;
+  getParentBound: () => Bounding;
   onBackButtonClick?: () => void;
-}> = ({ step, setStep, onBackButtonClick }) => {
+}> = ({ step, setStep, onBackButtonClick, getParentBound }) => {
   useEffect(() => {
     const styleTag = document.createElement("style");
     styleTag.innerText = `
@@ -298,6 +305,7 @@ const StepEditor: FC<{
                   <LinkEditor
                     key={index}
                     value={link}
+                    getParentBound={getParentBound}
                     onChange={(newLink) => {
                       setStep(
                         (prev) =>
@@ -338,21 +346,39 @@ const StepEditor: FC<{
   );
 };
 
-const LinkEditor: FC<{ value: Link; onChange: (val: Link) => void }> = ({
+const LinkEditor: FC<{ value: Link; onChange: (val: Link) => void, getParentBound: () => Bounding }> = ({
   value,
   onChange,
+  getParentBound
 }) => {
   const containerRef = useRef<HTMLDetailsElement>(null);
 
+  const [isTooRigth, setIsTooRight] = useState<Boolean>(false);
+  const [isTooTop, setIsTooTop] = useState<Boolean>(false);
+
   const handleBodyClick = useCallback((ev: any) => {
-    console.log(ev);
-    console.log(ev.target);
-    console.log(ev.currentTarget);
     if (containerRef.current && !ev.target.contains(containerRef.current)) {
       // TODO: currently does not work because the shadow root propagates events differently, need to understand this better
       // containerRef.current.removeAttribute("open");
     }
   }, []);
+
+  const handleToggle = (ev: any) => {
+    const parentBounding = getParentBound();
+    const dropdown = ev.target.querySelector("div");
+    const dropdownBounding = dropdown.getBoundingClientRect();
+
+    if (dropdownBounding.right > parentBounding.right - 20) {
+      // 20 is just for savety, scrollbars, other things
+      setIsTooRight(true);
+    }
+
+    if (dropdownBounding.top < parentBounding.top + 50) {
+      // todo
+      // 50 includes 20 for safety plus current height of the "top bar", should be a variable also
+      setIsTooTop(true);
+    }
+  };
 
   useEffect(() => {
     document.body.addEventListener("click", handleBodyClick);
@@ -363,13 +389,14 @@ const LinkEditor: FC<{ value: Link; onChange: (val: Link) => void }> = ({
 
   return (
     <details
-      class="relative z-20 cursor-pointer open:drop-shadow-lg"
+      class="cursor-pointer open:drop-shadow-lg"
       ref={containerRef}
+      onToggle={handleToggle}
     >
       <summary class="list-none bg-gray-100 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-2 text-xs">
         {value.tagName.value}
       </summary>
-      <div class="text-left w-40 absolute -top-1 rounded-lg z-20 transform -translate-y-full bg-white">
+      <div class={`text-left w-40 absolute -top-1 rounded-lg z-20 transform -translate-y-full bg-white ${isTooRigth && "-translate-x-full"} ${isTooTop && "translate-y-1/3"}`}>
         <div class="p-1">
           <Switch
             label="Enabled"
