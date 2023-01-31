@@ -23,3 +23,8 @@ export interface Trigger {
   event: Event;
   path: Link[];
 }
+
+export interface Bounding {
+  top: number;
+  right: number;
+}
