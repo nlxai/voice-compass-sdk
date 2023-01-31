@@ -50,11 +50,11 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
 
   return (
     <div
-      class="w-96 fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg"
+      class="w-96 h-[200px] overflow-auto fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg"
       style={`z-index: 100000; transform: translate3d(${drag.position[0]}px, ${drag.position[1]}px, 0)`}
     >
       <div
-        class="px-2 py-1 cursor-move sticky top-0 text-base py-1 bg-black rounded-t-lg text-white flex items-center justify-between"
+        class="relative z-30 px-2 py-1 cursor-move sticky top-0 text-base py-1 bg-black rounded-t-lg text-white flex items-center justify-between"
         onMouseDown={drag.onMouseDown}
       >
         <p>Journey Wizard</p>
@@ -291,8 +291,8 @@ const StepEditor: FC<{
                 );
               }}
             />
-            <div class="flex flex-wrap space-x-1">
-              <span class="text-xs text-gray-600">Path:</span>
+            <div class="flex flex-wrap space-x-1 space-y-1">
+              <span class="text-xs text-gray-600 mt-1">Path:</span>
               {step.trigger.path.map((link, index) => {
                 return (
                   <LinkEditor
@@ -345,6 +345,9 @@ const LinkEditor: FC<{ value: Link; onChange: (val: Link) => void }> = ({
   const containerRef = useRef<HTMLDetailsElement>(null);
 
   const handleBodyClick = useCallback((ev: any) => {
+    console.log(ev);
+    console.log(ev.target);
+    console.log(ev.currentTarget);
     if (containerRef.current && !ev.target.contains(containerRef.current)) {
       // TODO: currently does not work because the shadow root propagates events differently, need to understand this better
       // containerRef.current.removeAttribute("open");
@@ -366,7 +369,7 @@ const LinkEditor: FC<{ value: Link; onChange: (val: Link) => void }> = ({
       <summary class="list-none bg-gray-100 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-2 text-xs">
         {value.tagName.value}
       </summary>
-      <div class="text-left w-40 absolute -bottom-1 rounded-lg z-20 transform translate-y-full bg-white">
+      <div class="text-left w-40 absolute -top-1 rounded-lg z-20 transform -translate-y-full bg-white">
         <div class="p-1">
           <Switch
             label="Enabled"
