@@ -333,6 +333,28 @@ export const create = (config: Config): VoiceCompass => {
     });
   };
 
+  const handleGlobalBlurForWizard = (ev: any) => {
+    if (mode === "compose") {
+      return;
+    }
+    liveSteps.forEach((step) => {
+      if (!step.trigger || step.trigger.event !== "invalid") {
+        return;
+      }
+      const selector = toSelector(step.trigger.path);
+      const node = document.querySelector(selector);
+      if (
+        node === ev.target &&
+        node instanceof HTMLInputElement &&
+        inputValidationError(node)
+      ) {
+        updateStep({
+          stepId: step.key,
+        });
+      }
+    });
+  };
+
   return {
     updateStep,
     getLastStepId: () => {
@@ -352,9 +374,11 @@ export const create = (config: Config): VoiceCompass => {
     },
     runWizard: () => {
       document.addEventListener("click", handleGlobalClickForWizard);
+      document.addEventListener("focusout", handleGlobalBlurForWizard);
     },
     stopWizard: () => {
       document.removeEventListener("click", handleGlobalClickForWizard);
+      document.removeEventListener("focusout", handleGlobalBlurForWizard);
     },
     appendEscalationButton,
   };
