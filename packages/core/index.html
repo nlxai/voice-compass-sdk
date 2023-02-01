@@ -4,8 +4,8 @@
 <body>
   <h1>My App2</h1>
   <div>
-    <button>click me</button>
-    <button>click too</button>
+    <button class="click">click me</button>
+    <button class="click">click too</button>
     <div class="red">
       <ul class="blue">
         <li class="heh">
@@ -31,7 +31,7 @@
                                                 <article>
                                                   <article>
                                                     <article>
-                                                      <button>click third one</button>
+                                                      <button class="click">click third one</button>
                                                     </article>
                                                   </article>
                                                 </article>
@@ -59,3 +59,8 @@
     </div>
   </div>
 </body>
+
+<script type="text/javascript">
+  document.querySelectorAll(".click").forEach(elem =>
+    elem.addEventListener("click", e => { console.log("clicked", e.currentTarget) }))
+</script>

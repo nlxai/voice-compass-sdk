@@ -210,6 +210,7 @@ const StepEditor: FC<{
         return;
       }
       ev.preventDefault();
+      ev.stopPropagation();
       setStep(
         (prev) =>
           prev && {
@@ -238,11 +239,11 @@ const StepEditor: FC<{
   }, []);
 
   useEffect(() => {
-    document.body.addEventListener("click", handleBodyClick);
+    document.body.addEventListener("click", handleBodyClick, true);
     document.body.addEventListener("mouseover", handleMouseOver);
     document.body.addEventListener("mouseout", handleMouseOut);
     return () => {
-      document.body.removeEventListener("click", handleBodyClick);
+      document.body.removeEventListener("click", handleBodyClick, true);
       document.body.removeEventListener("mouseover", handleMouseOver);
       document.body.removeEventListener("mouseout", handleMouseOut);
     };
