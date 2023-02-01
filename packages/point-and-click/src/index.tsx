@@ -171,6 +171,31 @@ const StepEditor: FC<{
   getParentBound: () => Bounding;
   onBackButtonClick?: () => void;
 }> = ({ step, setStep, onBackButtonClick, getParentBound }) => {
+  const [basedOn, setBasedOn] = useState("html");
+  const [cssSelector, setCssSelector] = useState("");
+  const [numberOfElementsFound, setNumberOfElementsFound] = useState(0);
+
+  const updateCssSelector = (e: any) => {
+    const selector = e.target.value;
+    setCssSelector(selector);
+    try {
+      setNumberOfElementsFound(document.querySelectorAll(selector).length);
+    } catch (e) {
+      setNumberOfElementsFound(0);
+    }
+    setStep(
+      (prev) =>
+        prev && {
+          ...prev,
+          trigger: {
+            event: prev?.trigger?.event ?? "click",
+            path: prev?.trigger?.path ?? [],
+            selector,
+          },
+        }
+    );
+  }
+
   useEffect(() => {
     const styleTag = document.createElement("style");
     styleTag.innerText = `
@@ -190,17 +215,35 @@ const StepEditor: FC<{
   }, []);
 
   useEffect(() => {
-    if (step.trigger) {
-      const selector = toSelector(step.trigger.path);
-      const elements = document.querySelectorAll(selector);
-      elements.forEach((element: any) => {
-        element.setAttribute("data-vc-active", "true");
-      });
-      return () => {
+    if (step?.trigger?.selector) {
+      setBasedOn("css");
+      setCssSelector(step.trigger.selector);
+    }
+
+    if (step?.trigger) {
+      const selector = step.trigger.selector
+        ? step.trigger.selector
+        : toSelector(step.trigger.path);
+
+      try {
+        const elements = document.querySelectorAll(selector);
+
+        if (step.trigger.selector)
+          setNumberOfElementsFound(elements.length);
+
         elements.forEach((element: any) => {
-          element.removeAttribute("data-vc-active");
+          element.setAttribute("data-vc-active", "true");
         });
-      };
+        return () => {
+          elements.forEach((element: any) => {
+            element.removeAttribute("data-vc-active");
+          });
+        };
+      } catch (e) {
+        // todo: show warning that nothing found
+        console.log(e);
+        return;
+      }
     }
   }, [step.trigger]);
 
@@ -299,7 +342,23 @@ const StepEditor: FC<{
               }}
             />
             <div class="flex flex-wrap space-x-1 space-y-1">
-              <span class="text-xs text-gray-600 mt-1">Path:</span>
+              <span class="text-xs text-gray-600 mt-1">Base on:</span>
+              <button
+                class={`rounded-lg px-2 text-xs transition-colors ${basedOn === "html" ? "bg-black text-white cursor-default" : "bg-gray-100 hover:text-blue-600 hover:bg-blue-50"}`}
+                onClick={() => setBasedOn("html")}
+              >
+                html path
+              </button>
+              <span class="text-xs text-gray-600 mt-1">or</span>
+              <button
+                class={`rounded-lg px-2 text-xs transition-colors ${basedOn === "css" ? "bg-black text-white cursor-default" : "bg-gray-100 hover:text-blue-600 hover:bg-blue-50"}`}
+                onClick={() => setBasedOn("css")}
+              >
+                css selector
+              </button>
+            </div>
+            {basedOn === "html" ? <div class="flex flex-wrap space-x-1 space-y-1">
+              <span class="text-xs text-gray-600 self-end">Path:</span>
               {step.trigger.path.map((link, index) => {
                 return (
                   <LinkEditor
@@ -323,7 +382,16 @@ const StepEditor: FC<{
                   />
                 );
               })}
-            </div>
+            </div> : basedOn === "css" && <div class="flex flex-wrap space-x-1 space-y-1">
+              <span class="text-xs text-gray-600 self-end">CSS selector:</span>
+              <input
+                type="text"
+                class="border-b border-gray-600 focus:outline-0 focus:border-black text-red-700 text-sm"
+                value={cssSelector}
+                onInput={updateCssSelector}
+              />
+              <span class="text-xs text-gray-600 bg-gray-100 rounded-md">{numberOfElementsFound} element{numberOfElementsFound !== 1 && "s"} found for this selector</span>
+            </div>}
             <RemoveButton
               onClick={() => {
                 setStep(
