@@ -22,7 +22,7 @@ export type Event = "click" | "invalid" | "inserted";
 export interface Trigger {
   event: Event;
   path: Link[];
-  selector?: any;
+  selector?: string;
 }
 
 export interface Bounding {
