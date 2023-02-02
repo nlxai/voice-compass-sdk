@@ -60,7 +60,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
 
   return (
     <div
-      class="w-96 h-[200px] overflow-auto fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg"
+      class="w-96 max-h-[320px] overflow-auto fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg"
       style={`z-index: 100000; transform: translate3d(${drag.position[0]}px, ${drag.position[1]}px, 0)`}
       ref={containerRef}
     >
@@ -103,7 +103,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
       </div>
       <div>
         {savedSteps === "loading" ? (
-          <p class="p-2 text-xs text-gray-600">Loading steps...</p>
+          <p class="p-2 text-xs text-gray-600 text-center">Loading steps...</p>
         ) : savedSteps === "error" ? (
           <p class="p-2 text-xs text-red-600">
             Something went wrong. Please open the page again from the journey
@@ -206,12 +206,12 @@ const StepEditor: FC<{
   useEffect(() => {
     const styleTag = document.createElement("style");
     styleTag.innerText = `
-    [data-vc-active] {
-      outline: 1px solid #fbbf24;
-      outline-offset: 2px;
-    }
     [data-vc-hovered] {
       outline: 1px solid #60a5fa;
+      outline-offset: 2px;
+    }
+    [data-vc-active] {
+      outline: 1px solid #fbbf24;
       outline-offset: 2px;
     }
     `;

@@ -7,9 +7,6 @@ interface ImportMetaEnv {
 
 import { create } from "./index";
 
-// @ts-ignore
-console.log(import.meta.env.VITE_VC_DEV_API_KEY);
-
 const vc = create({
   dev: true,
   // @ts-ignore
