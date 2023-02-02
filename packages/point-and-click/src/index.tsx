@@ -168,7 +168,8 @@ export const isInsideComponent = (element: HTMLElement): boolean => {
 const eventOptions: { label: string; value: Event }[] = [
   { value: "click", label: "Click" },
   { value: "invalid", label: "Invalid form input" },
-  { value: "inserted", label: "Appear on page" },
+  // TODO: implement and add to the UI later
+  // { value: "inserted", label: "Appear on page" },
 ];
 
 const StepEditor: FC<{
