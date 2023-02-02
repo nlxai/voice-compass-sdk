@@ -2,11 +2,18 @@ import { h, render, type FunctionalComponent as FC } from "preact";
 import {
   useState,
   useRef,
+  useMemo,
   useEffect,
   useCallback,
   type StateUpdater,
 } from "preact/hooks";
-import { BackButton, RemoveButton, SimpleSelect, Switch } from "./ui";
+import {
+  BackButton,
+  RemoveButton,
+  SimpleSelect,
+  Switch,
+  ToggleButton,
+} from "./ui";
 import { type Step, type Link, type Event, type Bounding } from "./types";
 import { fetchSteps, updateSteps } from "./api";
 import { getLinks, toSelector } from "./logic";
@@ -32,8 +39,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
 
   const drag = useDrag();
 
-  const getParentBound = () =>
-    containerRef?.current?.getBoundingClientRect();
+  const getParentBound = () => containerRef?.current?.getBoundingClientRect();
 
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
@@ -171,13 +177,15 @@ const StepEditor: FC<{
   getParentBound: () => Bounding;
   onBackButtonClick?: () => void;
 }> = ({ step, setStep, onBackButtonClick, getParentBound }) => {
-  const [basedOn, setBasedOn] = useState("html");
-  const [cssSelector, setCssSelector] = useState("");
   const [numberOfElementsFound, setNumberOfElementsFound] = useState(0);
+
+  const basedOn = useMemo<"css" | "html">(
+    () => (typeof step.trigger?.selector === "string" ? "css" : "html"),
+    [step.trigger]
+  );
 
   const updateCssSelector = (e: any) => {
     const selector = e.target.value;
-    setCssSelector(selector);
     try {
       setNumberOfElementsFound(document.querySelectorAll(selector).length);
     } catch (e) {
@@ -187,14 +195,13 @@ const StepEditor: FC<{
       (prev) =>
         prev && {
           ...prev,
-          trigger: {
-            event: prev?.trigger?.event ?? "click",
-            path: prev?.trigger?.path ?? [],
+          trigger: prev.trigger && {
+            ...prev.trigger,
             selector,
           },
         }
     );
-  }
+  };
 
   useEffect(() => {
     const styleTag = document.createElement("style");
@@ -215,11 +222,6 @@ const StepEditor: FC<{
   }, []);
 
   useEffect(() => {
-    if (step?.trigger?.selector) {
-      setBasedOn("css");
-      setCssSelector(step.trigger.selector);
-    }
-
     if (step?.trigger) {
       const selector = step.trigger.selector
         ? step.trigger.selector
@@ -228,8 +230,7 @@ const StepEditor: FC<{
       try {
         const elements = document.querySelectorAll(selector);
 
-        if (step.trigger.selector)
-          setNumberOfElementsFound(elements.length);
+        if (step.trigger.selector) setNumberOfElementsFound(elements.length);
 
         elements.forEach((element: any) => {
           element.setAttribute("data-vc-active", "true");
@@ -343,55 +344,82 @@ const StepEditor: FC<{
             />
             <div class="flex flex-wrap space-x-1 space-y-1">
               <span class="text-xs text-gray-600 mt-1">Base on:</span>
-              <button
-                class={`rounded-lg px-2 text-xs transition-colors ${basedOn === "html" ? "bg-black text-white cursor-default" : "bg-gray-100 hover:text-blue-600 hover:bg-blue-50"}`}
-                onClick={() => setBasedOn("html")}
-              >
-                html path
-              </button>
-              <span class="text-xs text-gray-600 mt-1">or</span>
-              <button
-                class={`rounded-lg px-2 text-xs transition-colors ${basedOn === "css" ? "bg-black text-white cursor-default" : "bg-gray-100 hover:text-blue-600 hover:bg-blue-50"}`}
-                onClick={() => setBasedOn("css")}
-              >
-                css selector
-              </button>
-            </div>
-            {basedOn === "html" ? <div class="flex flex-wrap space-x-1 space-y-1">
-              <span class="text-xs text-gray-600 self-end">Path:</span>
-              {step.trigger.path.map((link, index) => {
-                return (
-                  <LinkEditor
-                    key={index}
-                    value={link}
-                    getParentBound={getParentBound}
-                    onChange={(newLink) => {
-                      setStep(
-                        (prev) =>
-                          prev && {
-                            ...step,
-                            trigger: step.trigger && {
-                              ...step.trigger,
-                              path: step.trigger.path.map((link, i) =>
-                                i === index ? newLink : link
-                              ),
-                            },
-                          }
-                      );
-                    }}
-                  />
-                );
-              })}
-            </div> : basedOn === "css" && <div class="flex flex-wrap space-x-1 space-y-1">
-              <span class="text-xs text-gray-600 self-end">CSS selector:</span>
-              <input
-                type="text"
-                class="border-b border-gray-600 focus:outline-0 focus:border-black text-red-700 text-sm"
-                value={cssSelector}
-                onInput={updateCssSelector}
+              <ToggleButton
+                isActive={basedOn === "html"}
+                label="HTML path"
+                onClick={() => {
+                  setStep(
+                    (prev) =>
+                      prev && {
+                        ...prev,
+                        trigger: prev.trigger && {
+                          ...prev.trigger,
+                          selector: undefined,
+                        },
+                      }
+                  );
+                }}
               />
-              <span class="text-xs text-gray-600 bg-gray-100 rounded-md">{numberOfElementsFound} element{numberOfElementsFound !== 1 && "s"} found for this selector</span>
-            </div>}
+              <span class="text-xs text-gray-600 mt-1">or</span>
+              <ToggleButton
+                isActive={basedOn === "css"}
+                label="custom CSS selector"
+                onClick={() => {
+                  setStep(
+                    (prev) =>
+                      prev && {
+                        ...prev,
+                        trigger: prev.trigger && {
+                          ...prev.trigger,
+                          selector: "",
+                        },
+                      }
+                  );
+                }}
+              />
+            </div>
+            {typeof step.trigger.selector === "string" ? (
+              <div class="space-y-1">
+                <input
+                  type="text"
+                  class="border-b py-0.5 font-mono block w-full text-xs border-gray-300 focus:outline-0 focus:border-blue-600"
+                  placeholder="Enter selector"
+                  value={step.trigger.selector}
+                  onInput={updateCssSelector}
+                />
+                <p class="text-xs text-gray-400">
+                  {numberOfElementsFound} element
+                  {numberOfElementsFound !== 1 && "s"} found for this selector
+                </p>
+              </div>
+            ) : (
+              <div class="flex flex-wrap space-x-1 space-y-1">
+                <span class="text-xs text-gray-600 self-end">Path:</span>
+                {step.trigger.path.map((link, index) => {
+                  return (
+                    <LinkEditor
+                      key={index}
+                      value={link}
+                      getParentBound={getParentBound}
+                      onChange={(newLink) => {
+                        setStep(
+                          (prev) =>
+                            prev && {
+                              ...step,
+                              trigger: step.trigger && {
+                                ...step.trigger,
+                                path: step.trigger.path.map((link, i) =>
+                                  i === index ? newLink : link
+                                ),
+                              },
+                            }
+                        );
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            )}
             <RemoveButton
               onClick={() => {
                 setStep(
@@ -414,11 +442,11 @@ const StepEditor: FC<{
   );
 };
 
-const LinkEditor: FC<{ value: Link; onChange: (val: Link) => void, getParentBound: () => Bounding }> = ({
-  value,
-  onChange,
-  getParentBound
-}) => {
+const LinkEditor: FC<{
+  value: Link;
+  onChange: (val: Link) => void;
+  getParentBound: () => Bounding;
+}> = ({ value, onChange, getParentBound }) => {
   const containerRef = useRef<HTMLDetailsElement>(null);
 
   const [isTooRigth, setIsTooRight] = useState<Boolean>(false);
@@ -464,7 +492,11 @@ const LinkEditor: FC<{ value: Link; onChange: (val: Link) => void, getParentBoun
       <summary class="list-none bg-gray-100 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-2 text-xs">
         {value.tagName.value}
       </summary>
-      <div class={`text-left w-40 absolute -top-1 rounded-lg z-20 transform -translate-y-full bg-white ${isTooRigth && "-translate-x-full"} ${isTooTop && "translate-y-1/3"}`}>
+      <div
+        class={`text-left w-40 absolute -top-1 rounded-lg z-20 transform -translate-y-full bg-white ${
+          isTooRigth && "-translate-x-full"
+        } ${isTooTop && "translate-y-1/3"}`}
+      >
         <div class="p-1">
           <Switch
             label="Enabled"

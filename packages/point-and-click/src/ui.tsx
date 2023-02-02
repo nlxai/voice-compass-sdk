@@ -83,6 +83,23 @@ export const SimpleSelect = <Value extends unknown>({
   );
 };
 
+export const ToggleButton: FC<{
+  label: string;
+  onClick: () => void;
+  isActive: boolean;
+}> = ({ label, onClick, isActive }) => (
+  <button
+    class={`rounded-lg px-2 text-xs border transition-colors ${
+      isActive
+        ? "text-blue-600 border-blue-600 bg-blue-50 text-white cursor-default"
+        : "border-transparent bg-gray-100 hover:text-blue-600 hover:bg-blue-50"
+    }`}
+    onClick={onClick}
+  >
+    {label}
+  </button>
+);
+
 export const Switch: FC<{
   checked: boolean;
   onChange: (newChecked: boolean) => void;
