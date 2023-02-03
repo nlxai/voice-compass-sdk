@@ -14,7 +14,13 @@ import {
   Switch,
   ToggleButton,
 } from "./ui";
-import { type Step, type Link, type Event, type Bounding } from "./types";
+import {
+  type Step,
+  type Link,
+  type Event,
+  type Bounding,
+  type Trigger,
+} from "./types";
 import { fetchSteps, updateSteps } from "./api";
 import { getLinks, toSelector } from "./logic";
 import { useDrag } from "./drag";
@@ -60,7 +66,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
 
   return (
     <div
-      class="w-96 h-[200px] overflow-auto fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg"
+      class="w-96 max-h-[320px] overflow-auto fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg"
       style={`z-index: 100000; transform: translate3d(${drag.position[0]}px, ${drag.position[1]}px, 0)`}
       ref={containerRef}
     >
@@ -103,7 +109,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
       </div>
       <div>
         {savedSteps === "loading" ? (
-          <p class="p-2 text-xs text-gray-600">Loading steps...</p>
+          <p class="p-2 text-xs text-gray-600 text-center">Loading steps...</p>
         ) : savedSteps === "error" ? (
           <p class="p-2 text-xs text-red-600">
             Something went wrong. Please open the page again from the journey
@@ -168,7 +174,9 @@ export const isInsideComponent = (element: HTMLElement): boolean => {
 const eventOptions: { label: string; value: Event }[] = [
   { value: "click", label: "Click" },
   { value: "invalid", label: "Invalid form input" },
-  { value: "inserted", label: "Appear on page" },
+  { value: "start", label: "Journey start" },
+  // TODO: implement and add to the UI later
+  // { value: "inserted", label: "Appear on page" },
 ];
 
 const StepEditor: FC<{
@@ -206,12 +214,12 @@ const StepEditor: FC<{
   useEffect(() => {
     const styleTag = document.createElement("style");
     styleTag.innerText = `
-    [data-vc-active] {
-      outline: 1px solid #fbbf24;
-      outline-offset: 2px;
-    }
     [data-vc-hovered] {
       outline: 1px solid #60a5fa;
+      outline-offset: 2px;
+    }
+    [data-vc-active] {
+      outline: 1px solid #fbbf24;
       outline-offset: 2px;
     }
     `;
@@ -222,29 +230,31 @@ const StepEditor: FC<{
   }, []);
 
   useEffect(() => {
-    if (step?.trigger) {
-      const selector = step.trigger.selector
-        ? step.trigger.selector
-        : toSelector(step.trigger.path);
+    const selector = step.trigger?.selector
+      ? step.trigger.selector
+      : step.trigger?.path && toSelector(step.trigger.path);
 
-      try {
-        const elements = document.querySelectorAll(selector);
+    if (!selector) {
+      return;
+    }
 
-        if (step.trigger.selector) setNumberOfElementsFound(elements.length);
+    try {
+      const elements = document.querySelectorAll(selector);
 
+      setNumberOfElementsFound(elements.length);
+
+      elements.forEach((element: any) => {
+        element.setAttribute("data-vc-active", "true");
+      });
+      return () => {
         elements.forEach((element: any) => {
-          element.setAttribute("data-vc-active", "true");
+          element.removeAttribute("data-vc-active");
         });
-        return () => {
-          elements.forEach((element: any) => {
-            element.removeAttribute("data-vc-active");
-          });
-        };
-      } catch (e) {
-        // todo: show warning that nothing found
-        console.log(e);
-        return;
-      }
+      };
+    } catch (e) {
+      // todo: show warning that nothing found
+      console.log(e);
+      return;
     }
   }, [step.trigger]);
 
@@ -259,10 +269,15 @@ const StepEditor: FC<{
         (prev) =>
           prev && {
             ...prev,
-            trigger: {
-              event: "click",
-              path: getLinks(ev.target),
-            },
+            trigger: prev.trigger
+              ? {
+                  ...prev.trigger,
+                  path: getLinks(ev.target),
+                }
+              : {
+                  event: "click",
+                  path: getLinks(ev.target),
+                },
           }
       );
     },
@@ -293,6 +308,18 @@ const StepEditor: FC<{
     };
   }, []);
 
+  const modifyTrigger = (
+    fn: (prevTrigger: Trigger | undefined) => Trigger | undefined
+  ) => {
+    setStep(
+      (prev) =>
+        prev && {
+          ...prev,
+          trigger: fn(prev.trigger),
+        }
+    );
+  };
+
   return (
     <div class="space-y-2">
       <div>
@@ -322,6 +349,11 @@ const StepEditor: FC<{
             <TriggerIcon />
           </span>
           <span>Trigger</span>
+          {!step.trigger && (
+            <span class="text-gray-500 px-2 block !ml-2 uppercase text-[10px] bg-gray-100 rounded">
+              not set
+            </span>
+          )}
         </p>
 
         {step.trigger ? (
@@ -343,100 +375,130 @@ const StepEditor: FC<{
                 );
               }}
             />
-            <div class="flex flex-wrap space-x-1 space-y-1">
-              <span class="text-xs text-gray-600 mt-1">Base on:</span>
-              <ToggleButton
-                isActive={basedOn === "html"}
-                label="HTML path"
-                onClick={() => {
-                  setStep(
-                    (prev) =>
-                      prev && {
-                        ...prev,
-                        trigger: prev.trigger && {
-                          ...prev.trigger,
-                          selector: undefined,
-                        },
-                      }
-                  );
-                }}
-              />
-              <span class="text-xs text-gray-600 mt-1">or</span>
-              <ToggleButton
-                isActive={basedOn === "css"}
-                label="custom CSS selector"
-                onClick={() => {
-                  setStep(
-                    (prev) =>
-                      prev && {
-                        ...prev,
-                        trigger: prev.trigger && {
-                          ...prev.trigger,
-                          selector: "",
-                        },
-                      }
-                  );
-                }}
-              />
-            </div>
-            {typeof step.trigger.selector === "string" ? (
-              <div class="space-y-1">
-                <input
-                  type="text"
-                  class="border-b py-0.5 font-mono block w-full text-xs border-gray-300 focus:outline-0 focus:border-blue-600"
-                  placeholder="Enter selector"
-                  value={step.trigger.selector}
-                  onInput={updateCssSelector}
-                />
-                <p class="text-xs text-gray-400">
-                  {numberOfElementsFound} element
-                  {numberOfElementsFound !== 1 && "s"} found for this selector
-                </p>
-              </div>
-            ) : (
-              <div class="flex flex-wrap space-x-1 space-y-1">
-                <span class="text-xs text-gray-600 self-end">Path:</span>
-                {step.trigger.path.map((link, index) => {
-                  return (
-                    <LinkEditor
-                      key={index}
-                      value={link}
-                      getParentBound={getParentBound}
-                      onChange={(newLink) => {
-                        setStep(
-                          (prev) =>
-                            prev && {
-                              ...step,
-                              trigger: step.trigger && {
-                                ...step.trigger,
-                                path: step.trigger.path.map((link, i) =>
-                                  i === index ? newLink : link
-                                ),
-                              },
-                            }
-                        );
-                      }}
+            {step.trigger.event !== "start" && (
+              <>
+                <div class="flex flex-wrap space-x-1 space-y-1">
+                  <span class="text-xs text-gray-600 mt-1">Base on:</span>
+                  <ToggleButton
+                    isActive={basedOn === "html"}
+                    label="direct HTML selection"
+                    onClick={() => {
+                      modifyTrigger(
+                        (prev) =>
+                          prev && {
+                            ...prev,
+                            selector: undefined,
+                          }
+                      );
+                    }}
+                  />
+                  <span class="text-xs text-gray-600 mt-1">or</span>
+                  <ToggleButton
+                    isActive={basedOn === "css"}
+                    label="custom CSS selector"
+                    onClick={() => {
+                      modifyTrigger(
+                        (prev) =>
+                          prev && {
+                            ...prev,
+                            selector: "",
+                          }
+                      );
+                    }}
+                  />
+                </div>
+                {typeof step.trigger.selector === "string" ? (
+                  <div class="space-y-1">
+                    <input
+                      type="text"
+                      class="border-b py-0.5 font-mono block w-full text-xs border-gray-300 focus:outline-0 focus:border-blue-600"
+                      placeholder="Enter selector"
+                      value={step.trigger.selector}
+                      onInput={updateCssSelector}
                     />
-                  );
-                })}
-              </div>
+                    <p class="text-xs text-gray-400">
+                      {numberOfElementsFound} element
+                      {numberOfElementsFound !== 1 && "s"} found for this
+                      selector
+                    </p>
+                  </div>
+                ) : (
+                  <div class="flex flex-wrap space-x-1 space-y-1">
+                    <span class="text-xs text-gray-600 self-end">Path:</span>
+                    {step.trigger.path ? (
+                      <>
+                        {step.trigger.path.map((link, index) => {
+                          return (
+                            <LinkEditor
+                              key={index}
+                              value={link}
+                              getParentBound={getParentBound}
+                              onChange={(newLink) => {
+                                setStep(
+                                  (prev) =>
+                                    prev && {
+                                      ...prev,
+                                      trigger: prev.trigger && {
+                                        ...prev.trigger,
+                                        path: (prev.trigger.path || []).map(
+                                          (link, i) =>
+                                            i === index ? newLink : link
+                                        ),
+                                      },
+                                    }
+                                );
+                              }}
+                            />
+                          );
+                        })}
+                        <button
+                          className="inline-block w-4 h-4 p-[1px] text-gray-500 hover:text-red-600"
+                          title="Remove"
+                          onClick={() => {
+                            modifyTrigger(
+                              (prev) =>
+                                prev && {
+                                  ...prev,
+                                  path: undefined,
+                                }
+                            );
+                          }}
+                        >
+                          <RemoveCircleOutlineIcon />
+                        </button>
+                      </>
+                    ) : (
+                      <p className="text-xs text-gray-400">
+                        Select an element on the page.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </>
             )}
             <RemoveButton
+              label="Remove trigger"
               onClick={() => {
-                setStep(
-                  (prev) =>
-                    prev && {
-                      ...prev,
-                      trigger: null,
-                    }
-                );
+                modifyTrigger(() => undefined);
               }}
             />
           </div>
         ) : (
-          <p class="text-gray-400 text-xs">
-            Select a page element to trigger the step.
-          </p>
+          <div className="space-y-2">
+            <p class="text-gray-600 text-xs">
+              Triggers define the user interaction that will trigger this step
+              during the journey.
+            </p>
+            <ToggleButton
+              onClick={() => {
+                modifyTrigger(() => ({
+                  event: "click",
+                }));
+              }}
+              label="Set trigger"
+              isActive={false}
+            />
+          </div>
         )}
       </div>
     </div>
@@ -572,6 +634,12 @@ const LinkEditor: FC<{
 const TriggerIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor">
     <path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"></path>
+  </svg>
+);
+
+const RemoveCircleOutlineIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M7 11v2h10v-2H7zm5-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path>
   </svg>
 );
 

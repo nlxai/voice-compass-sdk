@@ -320,7 +320,12 @@ export const create = (config: Config): VoiceCompass => {
       if (!step.trigger || step.trigger.event !== "click") {
         return;
       }
-      const selector = toSelector(step.trigger.path);
+      const selector =
+        step.trigger.selector ||
+        (step.trigger.path ? toSelector(step.trigger.path) : undefined);
+      if (!selector) {
+        return;
+      }
       const node = document.querySelector(selector);
       if (!node) {
         return;
@@ -341,7 +346,12 @@ export const create = (config: Config): VoiceCompass => {
       if (!step.trigger || step.trigger.event !== "invalid") {
         return;
       }
-      const selector = toSelector(step.trigger.path);
+      const selector =
+        step.trigger.selector ||
+        (step.trigger.path ? toSelector(step.trigger.path) : undefined);
+      if (!selector) {
+        return;
+      }
       const node = document.querySelector(selector);
       if (
         node === ev.target &&
