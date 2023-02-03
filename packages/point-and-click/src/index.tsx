@@ -58,7 +58,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
       ref={containerRef}
     >
       <div
-        class="relative z-30 px-2 py-2 cursor-move sticky top-0 text-base py-1 bg-black rounded-t-lg text-white flex items-center justify-between"
+        class="relative z-30 px-2 py-2 cursor-move sticky top-0 text-base bg-black rounded-t-lg text-white flex items-center justify-between"
         onMouseDown={drag.onMouseDown}
       >
         <div class="flex items-center space-x-1.5">
