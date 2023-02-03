@@ -1,7 +1,7 @@
 export interface Step {
   key: string;
   name?: string;
-  trigger: Trigger | undefined | null;
+  trigger?: Trigger | undefined;
 }
 
 interface Toggleable<T> {
@@ -17,11 +17,11 @@ export interface Link {
   index?: Toggleable<number>;
 }
 
-export type Event = "click" | "invalid" | "inserted";
+export type Event = "click" | "invalid" | "inserted" | "start";
 
 export interface Trigger {
   event: Event;
-  path: Link[];
+  path?: Link[];
   selector?: string;
 }
 

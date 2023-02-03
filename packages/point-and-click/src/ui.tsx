@@ -43,14 +43,17 @@ export const BackButton: FC<{ onClick: () => void }> = ({ onClick }) => (
   </button>
 );
 
-export const RemoveButton: FC<{ onClick: () => void }> = ({ onClick }) => (
+export const RemoveButton: FC<{ onClick: () => void; label?: string }> = ({
+  onClick,
+  label,
+}) => (
   <button
     class="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 px-1 py-0.5 relative -left-1 rounded"
     onClick={() => {
       onClick();
     }}
   >
-    Remove
+    {label || "Remove"}
   </button>
 );
 
