@@ -193,15 +193,6 @@ export const create = (config: Config): VoiceCompass => {
 
   let liveSteps: LiveStep[] = [];
 
-  fetchLiveSteps({
-    apiUrl,
-    apiKey: config.apiKey,
-    journeyId: config.journeyId,
-    journeyAssistantId: config.journeyAssistantId,
-  }).then((steps) => {
-    liveSteps = steps;
-  });
-
   const appendEscalationButton = ({
     container,
     label,
@@ -383,6 +374,23 @@ export const create = (config: Config): VoiceCompass => {
       document.removeEventListener("focusin", handleGlobalFocusForAnnotations);
     },
     runWizard: () => {
+      fetchLiveSteps({
+        apiUrl,
+        apiKey: config.apiKey,
+        journeyId: config.journeyId,
+        journeyAssistantId: config.journeyAssistantId,
+      }).then((steps) => {
+        liveSteps = steps;
+        if (mode !== "compose") {
+          steps.forEach((step) => {
+            if (step.trigger?.event === "start") {
+              updateStep({
+                stepId: step.key,
+              });
+            }
+          });
+        }
+      });
       document.addEventListener("click", handleGlobalClickForWizard);
       document.addEventListener("focusout", handleGlobalBlurForWizard);
     },
