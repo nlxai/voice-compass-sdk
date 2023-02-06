@@ -6,18 +6,8 @@ import {
   useCallback,
   type StateUpdater,
 } from "preact/hooks";
-import {
-  BackButton,
-  RemoveButton,
-  SimpleSelect,
-  ToggleButton,
-} from "../ui";
-import {
-  type Step,
-  type Event,
-  type Bounding,
-  type Trigger,
-} from "../types";
+import { BackButton, RemoveButton, SimpleSelect, ToggleButton } from "../ui";
+import { type Step, type Event, type Bounding, type Trigger } from "../types";
 import { getLinks, toSelector } from "../logic";
 import { TriggerIcon, RemoveCircleOutlineIcon } from "../icons";
 import { LinkEditor } from "./LinkEditor";
@@ -26,8 +16,7 @@ const eventOptions: { label: string; value: Event }[] = [
   { value: "click", label: "Click" },
   { value: "invalid", label: "Invalid form input" },
   { value: "start", label: "Journey start" },
-  // TODO: implement and add to the UI later
-  // { value: "inserted", label: "Appear on page" },
+  { value: "inserted", label: "Appear on page" },
 ];
 
 const isInsideComponent = (element: HTMLElement): boolean => {
