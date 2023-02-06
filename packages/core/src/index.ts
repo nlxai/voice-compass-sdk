@@ -12,7 +12,7 @@ import {
 interface Config {
   apiVersion?: "v1" | "v2";
   apiKey: string;
-  journeyId: string;
+  journeyId?: string;
   journeyAssistantId: string;
   voiceOverride?: string;
   languageOverride?: string;
@@ -122,8 +122,39 @@ export const create = (config: Config): VoiceCompass => {
 
   let timeout: number | null = null;
 
+  let currentJourneyId: string | undefined = config.journeyId;
+
+  let isWizardRunning = false;
+
+  const switchJourney = (journeyId: string) => {
+    currentJourneyId = journeyId;
+    if (isWizardRunning) {
+      fetchLiveSteps({
+        apiUrl,
+        apiKey: config.apiKey,
+        journeyId,
+        journeyAssistantId: config.journeyAssistantId,
+      }).then((steps) => {
+        liveSteps[journeyId] = steps;
+        if (mode !== "compose") {
+          steps.forEach((step) => {
+            if (step.trigger?.event === "start") {
+              updateStep({
+                stepId: step.key,
+              });
+            }
+          });
+        }
+      });
+    }
+  };
+
   const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
     const { forceEnd, forceEscalate, forceAutomate, ...rest } = stepData;
+
+    if (stepData.journeyId && stepData.journeyId !== currentJourneyId) {
+      switchJourney(stepData.journeyId);
+    }
 
     const payload = {
       ...rest,
@@ -191,7 +222,8 @@ export const create = (config: Config): VoiceCompass => {
 
   resetCallTimeout();
 
-  let liveSteps: LiveStep[] = [];
+  // Live steps are stored in an object indexed by journey ID
+  let liveSteps: Record<string, LiveStep[]> = {};
 
   const appendEscalationButton = ({
     container,
@@ -307,7 +339,9 @@ export const create = (config: Config): VoiceCompass => {
     if (mode === "compose") {
       return;
     }
-    liveSteps.forEach((step) => {
+    const currentLiveSteps =
+      (currentJourneyId && liveSteps[currentJourneyId]) || [];
+    currentLiveSteps.forEach((step) => {
       if (!step.trigger || step.trigger.event !== "click") {
         return;
       }
@@ -333,7 +367,9 @@ export const create = (config: Config): VoiceCompass => {
     if (mode === "compose") {
       return;
     }
-    liveSteps.forEach((step) => {
+    const currentLiveSteps =
+      (currentJourneyId && liveSteps[currentJourneyId]) || [];
+    currentLiveSteps.forEach((step) => {
       if (!step.trigger || step.trigger.event !== "invalid") {
         return;
       }
@@ -374,27 +410,33 @@ export const create = (config: Config): VoiceCompass => {
       document.removeEventListener("focusin", handleGlobalFocusForAnnotations);
     },
     runWizard: () => {
-      fetchLiveSteps({
-        apiUrl,
-        apiKey: config.apiKey,
-        journeyId: config.journeyId,
-        journeyAssistantId: config.journeyAssistantId,
-      }).then((steps) => {
-        liveSteps = steps;
-        if (mode !== "compose") {
-          steps.forEach((step) => {
-            if (step.trigger?.event === "start") {
-              updateStep({
-                stepId: step.key,
-              });
-            }
-          });
-        }
-      });
+      isWizardRunning = true;
+      if (currentJourneyId) {
+        fetchLiveSteps({
+          apiUrl,
+          apiKey: config.apiKey,
+          journeyId: currentJourneyId,
+          journeyAssistantId: config.journeyAssistantId,
+        }).then((steps) => {
+          if (currentJourneyId) {
+            liveSteps[currentJourneyId] = steps;
+          }
+          if (mode !== "compose") {
+            steps.forEach((step) => {
+              if (step.trigger?.event === "start") {
+                updateStep({
+                  stepId: step.key,
+                });
+              }
+            });
+          }
+        });
+      }
       document.addEventListener("click", handleGlobalClickForWizard);
       document.addEventListener("focusout", handleGlobalBlurForWizard);
     },
     stopWizard: () => {
+      isWizardRunning = false;
       document.removeEventListener("click", handleGlobalClickForWizard);
       document.removeEventListener("focusout", handleGlobalBlurForWizard);
     },
