@@ -48,7 +48,7 @@ export const RemoveButton: FC<{ onClick: () => void; label?: string }> = ({
   label,
 }) => (
   <button
-    class="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 px-1 py-0.5 relative -left-1 rounded"
+    class="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 px-1 py-0.5 -left-1 rounded"
     onClick={() => {
       onClick();
     }}

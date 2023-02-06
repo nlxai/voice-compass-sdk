@@ -54,8 +54,8 @@ export const LinkEditor: FC<{
         {value.tagName.value}
       </summary>
       <div
-        class={`text-left w-40 absolute -top-1 rounded-lg z-20 transform -translate-y-full bg-white ${
-          isTooRigth && "-translate-x-full"
+        class={`text-left w-40 absolute -top-1 rounded-lg z-20 transform -translate-y-full bg-white animate-firstlyTransparent ${
+          isTooRigth && "right-0"
         } ${isTooTop && "translate-y-1/3"}`}
       >
         <div class="p-1">
