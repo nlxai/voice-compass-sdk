@@ -1,4 +1,4 @@
-import { h, type FunctionalComponent as FC } from "preact";
+import { h, type ComponentChildren, type FunctionalComponent as FC } from "preact";
 
 export const SimpleCheckbox: FC<{
   label: string;
@@ -106,7 +106,7 @@ export const ToggleButton: FC<{
 export const Switch: FC<{
   checked: boolean;
   onChange: (newChecked: boolean) => void;
-  label?: string;
+  label?: ComponentChildren;
 }> = (props) => {
   return (
     <label className="relative flex items-center group space-x-1">

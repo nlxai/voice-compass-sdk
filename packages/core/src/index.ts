@@ -392,6 +392,54 @@ export const create = (config: Config): VoiceCompass => {
     });
   };
 
+  // Mutation observer
+
+  let observer: MutationObserver | null = null;
+
+  const setupMutationObserver = () => {
+    observer = new MutationObserver((mutations) => {
+      if (mode === "compose") {
+        return;
+      }
+      const addedNodes = mutations.flatMap<Node>((m) =>
+        Array.from(m.addedNodes)
+      );
+      const currentLiveSteps =
+        (currentJourneyId && liveSteps[currentJourneyId]) || [];
+      currentLiveSteps.forEach((step) => {
+        if (!step.trigger || step.trigger.event !== "inserted") {
+          return;
+        }
+        const selector =
+          step.trigger.selector ||
+          (step.trigger.path ? toSelector(step.trigger.path) : undefined);
+        if (!selector) {
+          return;
+        }
+        addedNodes.forEach((node) => {
+          if (
+            node instanceof HTMLElement &&
+            (node.matches(selector) || node.querySelector(selector))
+          ) {
+            updateStep({
+              stepId: step.key,
+            });
+          }
+        });
+      });
+    });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  };
+
+  const teardownMutationObserver = () => {
+    if (observer) {
+      observer.disconnect();
+    }
+  };
+
   return {
     updateStep,
     getLastStepId: () => {
@@ -432,11 +480,13 @@ export const create = (config: Config): VoiceCompass => {
           }
         });
       }
+      setupMutationObserver();
       document.addEventListener("click", handleGlobalClickForWizard);
       document.addEventListener("focusout", handleGlobalBlurForWizard);
     },
     stopWizard: () => {
       isWizardRunning = false;
+      teardownMutationObserver();
       document.removeEventListener("click", handleGlobalClickForWizard);
       document.removeEventListener("focusout", handleGlobalBlurForWizard);
     },

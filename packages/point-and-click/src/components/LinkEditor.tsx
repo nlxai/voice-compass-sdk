@@ -75,7 +75,7 @@ export const LinkEditor: FC<{
             <hr />
             <div class="p-1">
               <Switch
-                label="Tag name"
+                label=<>Tag name <span className="text-gray-400">{value.tagName.value}</span></>
                 checked={value.tagName.enabled}
                 onChange={(val) => {
                   onChange({
@@ -91,7 +91,7 @@ export const LinkEditor: FC<{
             {value.id && (
               <div class="p-1">
                 <Switch
-                  label="ID"
+                  label=<>ID <span className="text-gray-400">{value.id.value}</span></>
                   checked={value.id.enabled}
                   onChange={(val) => {
                     onChange({
@@ -108,7 +108,7 @@ export const LinkEditor: FC<{
             {value.index && (
               <div class="p-1">
                 <Switch
-                  label="Order"
+                  label=<>Order <span className="text-gray-400">{value.index.value}</span></>
                   checked={value.index.enabled}
                   onChange={(val) => {
                     onChange({
