@@ -12,15 +12,23 @@ export const LinkEditor: FC<{
 
   const [isTooRigth, setIsTooRight] = useState<Boolean>(false);
   const [isTooTop, setIsTooTop] = useState<Boolean>(false);
+  const [isDropdownClosed, setIsDropdownClosed] = useState<Boolean>(true);
 
-  const handleBodyClick = useCallback((ev: any) => {
-    if (containerRef.current && !ev.target.contains(containerRef.current)) {
-      // TODO: currently does not work because the shadow root propagates events differently, need to understand this better
-      // containerRef.current.removeAttribute("open");
-    }
-  }, []);
+  useEffect(() => {
+    if (isDropdownClosed)
+      containerRef?.current?.removeAttribute("open");
+    else
+      containerRef?.current?.setAttribute("open", "open");
+  }, [isDropdownClosed]);
 
   const handleToggle = (ev: any) => {
+    const isOpen = containerRef?.current?.getAttribute("open") !== null;
+
+    if (isOpen)
+      setIsDropdownClosed(false)
+    else
+      setIsDropdownClosed(true)
+
     const parentBounding = getParentBound();
     const dropdown = ev.target.querySelector("div");
     const dropdownBounding = dropdown.getBoundingClientRect();
@@ -37,26 +45,29 @@ export const LinkEditor: FC<{
     }
   };
 
-  useEffect(() => {
-    document.body.addEventListener("click", handleBodyClick);
-    return () => {
-      document.body.removeEventListener("click", handleBodyClick);
-    };
-  }, []);
-
   return (
     <details
       class="cursor-pointer open:drop-shadow-lg"
       ref={containerRef}
       onToggle={handleToggle}
     >
-      <summary class="list-none bg-gray-100 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-2 text-xs">
+      <summary
+        class="list-none bg-gray-100 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-2 text-xs"
+        onBlur={() => { setIsDropdownClosed(true) }}
+      >
         {value.tagName.value}
       </summary>
       <div
         class={`text-left w-40 absolute -top-1 rounded-lg z-20 transform -translate-y-full bg-white animate-firstlyTransparent ${
           isTooRigth && "right-0"
         } ${isTooTop && "translate-y-1/3"}`}
+        tabIndex={0}
+        onfocusout={(ev: any) => {
+          if (!ev.currentTarget.contains(ev.relatedTarget)) {
+            setIsDropdownClosed(true)
+          }
+        }}
+        onFocus={() => { setIsDropdownClosed(false) }}
       >
         <div class="p-1">
           <Switch
