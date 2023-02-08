@@ -53,7 +53,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
 
   return (
     <div
-      class="w-96 max-h-[320px] overflow-auto fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg"
+      class="w-96 max-h-[320px] overflow-auto fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg font-system"
       style={`z-index: 100000; transform: translate3d(${drag.position[0]}px, ${drag.position[1]}px, 0)`}
       ref={containerRef}
     >
