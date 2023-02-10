@@ -232,7 +232,7 @@ export const StepEditor: FC<{
                   <span class="text-xs text-gray-600 mt-1">Base on:</span>
                   <ToggleButton
                     isActive={basedOn === "html"}
-                    label="direct HTML selection"
+                    label="Direct HTML selection"
                     onClick={() => {
                       modifyTrigger(
                         (prev) =>
@@ -246,7 +246,7 @@ export const StepEditor: FC<{
                   <span class="text-xs text-gray-600 mt-1">or</span>
                   <ToggleButton
                     isActive={basedOn === "css"}
-                    label="custom CSS selector"
+                    label="Custom CSS selector"
                     onClick={() => {
                       modifyTrigger(
                         (prev) =>
@@ -262,7 +262,7 @@ export const StepEditor: FC<{
                   <div>
                     <input
                       type="text"
-                      class="border-b pt-0.5 pb-px mt-2 font-mono block w-full text-xs border-gray-300 focus:outline-0 focus:border-blue-600"
+                      class="border-b pt-0.5 pb-px mt-2 font-mono block w-full text-xs border-gray-300 focus:outline-0 focus:border-voiceCompassPurpleDarker"
                       placeholder="Enter selector"
                       value={step.trigger.selector}
                       onInput={updateCssSelector}
