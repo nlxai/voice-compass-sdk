@@ -1,5 +1,6 @@
 export interface Step {
   key: string;
+  body?: string;
   name?: string;
   trigger?: Trigger | undefined;
 }

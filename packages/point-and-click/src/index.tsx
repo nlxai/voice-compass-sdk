@@ -1,10 +1,16 @@
-import { h, render, type FunctionalComponent as FC } from "preact";
+import {
+  h,
+  render,
+  type FunctionalComponent as FC,
+  type RefObject,
+} from "preact";
 import { useState, useRef, useEffect } from "preact/hooks";
 import { type Step } from "./types";
-import { fetchSteps, updateSteps } from "./api";
+import { fetchSteps, updateSteps, fetchSpeechSynthesis } from "./api";
 import { useDrag } from "./drag";
 import { AutoFixHighIcon, TriggerIcon } from "./icons";
 import { StepEditor } from "./components/StepEditor";
+import { SpeechSynthesis } from "./components/SpeechSynthesis";
 
 export { type Step, type Link, type Trigger } from "./types";
 export { toSelector } from "./logic";
@@ -32,6 +38,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
     const params = new URLSearchParams(document.location.search);
     token.current = params.get("token") || "";
     journeyId.current = params.get("journeyId") || "";
+
     fetchSteps({
       journeyId: journeyId.current,
       token: token.current,
@@ -133,6 +140,8 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
                 <StepSummary
                   key={step.key}
                   step={step}
+                  apiKey={props.apiKey}
+                  token={token}
                   onSelect={() => {
                     setEditedStepKey(step.key);
                   }}
@@ -157,30 +166,39 @@ export const isInsideComponent = (element: HTMLElement): boolean => {
   );
 };
 
-const StepSummary: FC<{ step: Step; onSelect: () => void }> = ({
-  step,
-  onSelect,
-}) => (
-  <button
-    class="flex items-center text-left space-x-2 w-full px-2 py-2 cursor-pointer hover:bg-voiceCompassPurple05 transition-colors duration-200"
-    onClick={onSelect}
-  >
-    {step.trigger ? (
-      <span class="inline-block flex-none w-4 h-4 text-gray-500">
-        <TriggerIcon />
-      </span>
-    ) : (
-      <span class="inline-block flex-none w-4 h-4 text-gray-600"></span>
-    )}
-    <div>
-      {step.name ? (
-        <h2 class="text-sm font-medium">{step.name}</h2>
+const StepSummary: FC<{
+  step: Step;
+  onSelect: () => void;
+  apiKey: string;
+  token: RefObject<string>;
+}> = ({ step, onSelect, apiKey, token }) => (
+  <div class="relative">
+    <button
+      class="flex items-center text-left space-x-2 w-full px-2 py-2 cursor-pointer hover:bg-voiceCompassPurple05 transition-colors duration-200"
+      onClick={onSelect}
+    >
+      {step.trigger ? (
+        <span class="inline-block flex-none w-4 h-4 text-gray-500">
+          <TriggerIcon />
+        </span>
       ) : (
-        <h2 class="text-sm font-medium text-gray-500">Untitled</h2>
+        <span class="inline-block flex-none w-4 h-4 text-gray-600"></span>
       )}
-      <p class="font-mono text-xs text-gray-500">{step.key}</p>
-    </div>
-  </button>
+      <div>
+        {step.name ? (
+          <h2 class="text-sm font-medium">{step.name}</h2>
+        ) : (
+          <h2 class="text-sm font-medium text-gray-500">Untitled</h2>
+        )}
+        <p class="font-mono text-xs text-gray-500">{step.key}</p>
+      </div>
+    </button>
+    {step.body && (
+      <div class="absolute right-2 top-1/2 transform -translate-y-1/2">
+        <SpeechSynthesis transcript={step.body} apiKey={apiKey} token={token} />
+      </div>
+    )}
+  </div>
 );
 
 const Nothing = () => null;
