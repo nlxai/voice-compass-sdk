@@ -2,7 +2,11 @@ import { h, type FunctionalComponent as FC } from "preact";
 import { useState, useEffect } from "preact/hooks";
 
 
-export const MatchCounter: FC<{ selector: string }> = ({ selector }) => {
+export const MatchCounter: FC<{
+  selector: string
+}> = ({
+  selector
+}) => {
   const [numberOfElementsFound, setNumberOfElementsFound] = useState(0);
 
   useEffect(() => {
