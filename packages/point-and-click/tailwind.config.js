@@ -6,12 +6,17 @@ module.exports = {
     extend: {
       keyframes: {
         firstlyTransparent: {
-          '0%, 50%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        }
+          "0%, 50%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
       },
       animation: {
-        firstlyTransparent: 'firstlyTransparent .2s',
+        firstlyTransparent: "firstlyTransparent .2s",
+      },
+      colors: {
+        voiceCompassPurple: "rgb(74, 102, 240)",
+        voiceCompassPurple05: "rgba(74, 102, 240, 0.05)",
+        voiceCompassPurpleDarker: "rgb(67, 93, 219)",
       },
       fontFamily: {
         system: [

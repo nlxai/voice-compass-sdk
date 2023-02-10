@@ -1,12 +1,6 @@
 import { h, render, type FunctionalComponent as FC } from "preact";
-import {
-  useState,
-  useRef,
-  useEffect,
-} from "preact/hooks";
-import {
-  type Step,
-} from "./types";
+import { useState, useRef, useEffect } from "preact/hooks";
+import { type Step } from "./types";
 import { fetchSteps, updateSteps } from "./api";
 import { useDrag } from "./drag";
 import { AutoFixHighIcon, TriggerIcon } from "./icons";
@@ -53,12 +47,12 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
 
   return (
     <div
-      class="w-96 max-h-[320px] overflow-auto fixed top-4 left-4 bg-white shadow-lg font-sans rounded-lg font-system"
+      class="w-96 max-h-[320px] overflow-auto fixed top-4 left-4 bg-white border border-gray-100 shadow-xl font-system rounded-lg"
       style={`z-index: 100000; transform: translate3d(${drag.position[0]}px, ${drag.position[1]}px, 0)`}
       ref={containerRef}
     >
       <div
-        class="relative z-30 px-2 py-2 cursor-move sticky top-0 text-base bg-black rounded-t-lg text-white flex items-center justify-between"
+        class="relative z-30 px-2 py-2 border-b border-gray-200 cursor-move sticky top-0 text-base rounded-t-lg flex items-center justify-between"
         onMouseDown={drag.onMouseDown}
       >
         <div class="flex items-center space-x-1.5">
@@ -69,7 +63,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
         </div>
         <div class="flex items-center space-x-2">
           <button
-            class="text-xs cursor-pointer py-0.5 px-2 rounded text-gray-200 hover:text-indigo-200 hover:bg-indigo-900 disabled:text-gray-500 disabled:hover:text-gray-500 disabled:hover:bg-transparent disabled:cursor-auto"
+            class="text-xs cursor-pointer py-0.5 px-2 text-white rounded bg-voiceCompassPurple hover:bg-voiceCompassPurpleDarker disabled:opacity-30 disabled:hover:bg-voiceCompassPurple disabled:cursor-auto"
             onClick={
               stepsDraft
                 ? () => {
@@ -168,9 +162,16 @@ const StepSummary: FC<{ step: Step; onSelect: () => void }> = ({
   onSelect,
 }) => (
   <button
-    class="flex items-center justify-between text-left w-full px-2 py-2 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+    class="flex items-center text-left space-x-2 w-full px-2 py-2 cursor-pointer hover:bg-voiceCompassPurple05 transition-colors duration-200"
     onClick={onSelect}
   >
+    {step.trigger ? (
+      <span class="inline-block flex-none w-4 h-4 text-gray-500">
+        <TriggerIcon />
+      </span>
+    ) : (
+      <span class="inline-block flex-none w-4 h-4 text-gray-600"></span>
+    )}
     <div>
       {step.name ? (
         <h2 class="text-sm font-medium">{step.name}</h2>
@@ -179,11 +180,6 @@ const StepSummary: FC<{ step: Step; onSelect: () => void }> = ({
       )}
       <p class="font-mono text-xs text-gray-500">{step.key}</p>
     </div>
-    {step.trigger && (
-      <span class="inline-block flex-none w-6 h-6 text-gray-400">
-        <TriggerIcon />
-      </span>
-    )}
   </button>
 );
 
@@ -194,6 +190,8 @@ customElements.define(
   class extends HTMLElement {
     container = document.createElement("div");
     root: any;
+    _apiKey: string | null = null;
+    _styleLoaded: boolean = false;
 
     constructor() {
       super();
@@ -210,12 +208,23 @@ details summary:focus {
   outline: none;
 }
       ` + String.raw`TAILWIND`;
+      style.onload = () => {
+        this._styleLoaded = true;
+        this.render();
+      };
       shadow.appendChild(style);
       shadow.appendChild(this.container);
     }
 
     set apiKey(val: string) {
-      this.root = render(<Wizard apiKey={val} />, this.container);
+      this._apiKey = val;
+      this.render();
+    }
+
+    render() {
+      if (this._apiKey && this._styleLoaded) {
+        this.root = render(<Wizard apiKey={this._apiKey} />, this.container);
+      }
     }
 
     disconnectedCallback() {

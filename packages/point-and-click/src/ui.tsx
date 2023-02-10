@@ -1,4 +1,8 @@
-import { h, type ComponentChildren, type FunctionalComponent as FC } from "preact";
+import {
+  h,
+  type ComponentChildren,
+  type FunctionalComponent as FC,
+} from "preact";
 
 export const SimpleCheckbox: FC<{
   label: string;
@@ -25,7 +29,7 @@ export const BackButton: FC<{ onClick: () => void }> = ({ onClick }) => (
       ev.stopPropagation();
       onClick();
     }}
-    class="flex text-xs items-center space-x-2 px-1 py-0.5 relative -left-1 rounded text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+    class="flex text-xs items-center space-x-2 px-1 py-0.5 relative -left-1 rounded text-voiceCompassPurple hover:text-voiceCompassPurpleDarker hover:bg-voiceCompassPurple05"
   >
     <svg
       width="6"
@@ -72,7 +76,7 @@ export const SimpleSelect = <Value extends unknown>({
     <div class="text-xs">
       <span class="text-gray-600">{label}:</span>{" "}
       <select
-        class="bg-gray-100 px-1 text-gray-800 !cursor-pointer hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+        class="bg-gray-100 px-1 text-gray-800 !cursor-pointer hover:text-voiceCompassPurple hover:bg-voiceCompassPurple05 rounded-lg"
         value={String(value)}
         onChange={(ev: any) => {
           onChange(ev.target.value);
@@ -94,8 +98,8 @@ export const ToggleButton: FC<{
   <button
     class={`rounded-lg px-2 text-xs border transition-colors ${
       isActive
-        ? "text-blue-600 border-blue-600 bg-blue-50 text-white cursor-default"
-        : "border-transparent bg-gray-100 hover:text-blue-600 hover:bg-blue-50"
+        ? "text-voiceCompassPurple border-voiceCompassPurple bg-blue-50 text-white cursor-default"
+        : "border-transparent bg-gray-100 hover:text-voiceCompassPurple hover:bg-voiceCompassPurple05"
     }`}
     onClick={onClick}
   >
