@@ -77,10 +77,8 @@ export const StepEditor: FC<{
   const currentSelector = useMemo(() => {
     return step.trigger?.selector
       ? step.trigger.selector
-      : step.trigger?.path && toSelector(step.trigger.path) || "";
+      : (step.trigger?.path && toSelector(step.trigger.path)) || "";
   }, [step.trigger]);
-
-  console.log(currentSelector);
 
   useEffect(() => {
     const selector = step.trigger?.selector
@@ -320,9 +318,7 @@ export const StepEditor: FC<{
                     )}
                   </div>
                 )}
-                {(step.trigger.path) && <MatchCounter
-                  selector={currentSelector}
-                />}
+                {currentSelector && <MatchCounter selector={currentSelector} />}
               </>
             )}
             <RemoveButton
