@@ -11,6 +11,7 @@ import { type Step, type Event, type Bounding, type Trigger } from "../types";
 import { getLinks, toSelector } from "../logic";
 import { TriggerIcon, RemoveCircleOutlineIcon } from "../icons";
 import { LinkEditor } from "./LinkEditor";
+import { MatchCounter } from "./MatchCounter";
 
 const eventOptions: { label: string; value: Event }[] = [
   { value: "click", label: "Click" },
@@ -36,7 +37,7 @@ export const StepEditor: FC<{
   getParentBound: () => Bounding;
   onBackButtonClick?: () => void;
 }> = ({ step, setStep, onBackButtonClick, getParentBound }) => {
-  const [numberOfElementsFound, setNumberOfElementsFound] = useState(0);
+  const [currentSelector, setCurrentSelector] = useState<string>("");
 
   const basedOn = useMemo<"css" | "html">(
     () => (typeof step.trigger?.selector === "string" ? "css" : "html"),
@@ -45,11 +46,7 @@ export const StepEditor: FC<{
 
   const updateCssSelector = (e: any) => {
     const selector = e.target.value;
-    try {
-      setNumberOfElementsFound(document.querySelectorAll(selector).length);
-    } catch (e) {
-      setNumberOfElementsFound(0);
-    }
+    setCurrentSelector(selector);
     setStep(
       (prev) =>
         prev && {
@@ -89,10 +86,10 @@ export const StepEditor: FC<{
       return;
     }
 
+    setCurrentSelector(selector);
+
     try {
       const elements = document.querySelectorAll(selector);
-
-      setNumberOfElementsFound(elements.length);
 
       elements.forEach((element: any) => {
         element.setAttribute("data-vc-active", "true");
@@ -103,7 +100,6 @@ export const StepEditor: FC<{
         });
       };
     } catch (e) {
-      // todo: show warning that nothing found
       console.log(e);
       return;
     }
@@ -260,19 +256,14 @@ export const StepEditor: FC<{
                   />
                 </div>
                 {typeof step.trigger.selector === "string" ? (
-                  <div class="space-y-1">
+                  <div>
                     <input
                       type="text"
-                      class="border-b py-0.5 font-mono block w-full text-xs border-gray-300 focus:outline-0 focus:border-blue-600"
+                      class="border-b pt-0.5 pb-px mt-2 font-mono block w-full text-xs border-gray-300 focus:outline-0 focus:border-blue-600"
                       placeholder="Enter selector"
                       value={step.trigger.selector}
                       onInput={updateCssSelector}
                     />
-                    <p class="text-xs text-gray-400">
-                      {numberOfElementsFound} element
-                      {numberOfElementsFound !== 1 && "s"} found for this
-                      selector
-                    </p>
                   </div>
                 ) : (
                   <div class="flex flex-wrap space-x-1 space-y-1">
@@ -326,6 +317,9 @@ export const StepEditor: FC<{
                     )}
                   </div>
                 )}
+                {(step.trigger.path) && <MatchCounter
+                  selector={currentSelector}
+                />}
               </>
             )}
             <RemoveButton
