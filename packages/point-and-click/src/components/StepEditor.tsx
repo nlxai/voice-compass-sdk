@@ -37,8 +37,6 @@ export const StepEditor: FC<{
   getParentBound: () => Bounding;
   onBackButtonClick?: () => void;
 }> = ({ step, setStep, onBackButtonClick, getParentBound }) => {
-  const [currentSelector, setCurrentSelector] = useState<string>("");
-
   const basedOn = useMemo<"css" | "html">(
     () => (typeof step.trigger?.selector === "string" ? "css" : "html"),
     [step.trigger]
@@ -46,7 +44,6 @@ export const StepEditor: FC<{
 
   const updateCssSelector = (e: any) => {
     const selector = e.target.value;
-    setCurrentSelector(selector);
     setStep(
       (prev) =>
         prev && {
@@ -77,6 +74,14 @@ export const StepEditor: FC<{
     };
   }, []);
 
+  const currentSelector = useMemo(() => {
+    return step.trigger?.selector
+      ? step.trigger.selector
+      : step.trigger?.path && toSelector(step.trigger.path) || "";
+  }, [step.trigger]);
+
+  console.log(currentSelector);
+
   useEffect(() => {
     const selector = step.trigger?.selector
       ? step.trigger.selector
@@ -85,8 +90,6 @@ export const StepEditor: FC<{
     if (!selector) {
       return;
     }
-
-    setCurrentSelector(selector);
 
     try {
       const elements = document.querySelectorAll(selector);
