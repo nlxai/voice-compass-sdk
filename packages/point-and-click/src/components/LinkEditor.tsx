@@ -10,7 +10,7 @@ export const LinkEditor: FC<{
 }> = ({ value, onChange, getParentBound }) => {
   const containerRef = useRef<HTMLDetailsElement>(null);
 
-  const [isTooRigth, setIsTooRight] = useState<Boolean>(false);
+  const [isTooRight, setIsTooRight] = useState<Boolean>(false);
   const [isTooTop, setIsTooTop] = useState<Boolean>(false);
   const [isDropdownClosed, setIsDropdownClosed] = useState<Boolean>(true);
 
@@ -52,14 +52,14 @@ export const LinkEditor: FC<{
       onToggle={handleToggle}
     >
       <summary
-        class="list-none bg-gray-100 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-2 text-xs"
+        class="list-none bg-gray-100 hover:text-voiceCompassPurpleDarker hover:bg-voiceCompassPurple05 rounded-lg px-2 text-xs"
         onBlur={() => { setIsDropdownClosed(true) }}
       >
         {value.tagName.value}
       </summary>
       <div
         class={`text-left w-40 absolute -top-1 rounded-lg z-20 transform -translate-y-full bg-white animate-firstlyTransparent ${
-          isTooRigth && "right-0"
+          isTooRight && "right-0"
         } ${isTooTop && "translate-y-1/3"}`}
         tabIndex={0}
         onfocusout={(ev: any) => {
