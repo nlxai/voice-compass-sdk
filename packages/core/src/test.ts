@@ -7,11 +7,13 @@ interface ImportMetaEnv {
 
 import { create } from "./index";
 
+const contactId = new URLSearchParams(window.location.search).get("cid") || "";
+
 const vc = create({
   dev: true,
   // @ts-ignore
   apiKey: import.meta.env.VITE_VC_DEV_API_KEY,
-  contactId: "",
+  contactId,
   // @ts-ignore
   journeyId: import.meta.env.VITE_VC_DEV_JOURNEY_ID,
   // @ts-ignore
