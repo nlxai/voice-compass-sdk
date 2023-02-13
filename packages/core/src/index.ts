@@ -1,5 +1,6 @@
 // The point-and-click prototype is not used yet
 import { toSelector, type Trigger } from "@nlx-voice-compass/point-and-click";
+import { saveSession, retrieveSession } from "./session";
 import { type StepData } from "./types";
 import {
   isDomElement,
@@ -105,7 +106,11 @@ export const create = (config: Config): VoiceCompass => {
     });
   }
 
-  if (!config.contactId) {
+  const session = retrieveSession(config.contactId);
+
+  const contactId = config.contactId || session?.contactId;
+
+  if (!contactId) {
     console.warn(
       'No contact ID provided. Please call the Voice Compass client `create` method with a `contactId` field extracted from the URL. Example code: `new URLSearchParams(window.location.search).get("cid")`'
     );
@@ -118,16 +123,28 @@ export const create = (config: Config): VoiceCompass => {
         : prodApiUrl
       : legacyApiUrl;
 
-  let previousStepId: string | null = null;
-
   let timeout: number | null = null;
-
-  let currentJourneyId: string | undefined = config.journeyId;
-
   let isWizardRunning = false;
+
+  let previousStepId: string | undefined = session?.previousStepId;
+  let currentJourneyId: string | undefined =
+    session?.journeyId || config.journeyId;
+
+  const saveVcSession = () => {
+    if (contactId) {
+      saveSession({
+        contactId,
+        journeyId: currentJourneyId,
+        previousStepId,
+      });
+    }
+  };
+
+  saveVcSession();
 
   const switchJourney = (journeyId: string) => {
     currentJourneyId = journeyId;
+    saveVcSession();
     if (isWizardRunning) {
       fetchLiveSteps({
         apiUrl,
@@ -152,16 +169,12 @@ export const create = (config: Config): VoiceCompass => {
   const sendUpdateRequest = (stepData: StepData): Promise<StepUpdate> => {
     const { forceEnd, forceEscalate, forceAutomate, ...rest } = stepData;
 
-    if (stepData.journeyId && stepData.journeyId !== currentJourneyId) {
-      switchJourney(stepData.journeyId);
-    }
-
     const payload = {
       ...rest,
       end: forceEnd,
       escalate: forceEscalate,
       automate: forceAutomate,
-      contactId: config.contactId,
+      contactId,
       implementation: config.implementation,
       botId,
       journeyId: stepData.journeyId || config.journeyId,
@@ -276,7 +289,11 @@ export const create = (config: Config): VoiceCompass => {
         warning: warning,
       });
     }
-    previousStepId = stepData.stepId || null;
+    if (stepData.journeyId && stepData.journeyId !== currentJourneyId) {
+      switchJourney(stepData.journeyId);
+    }
+    previousStepId = stepData.stepId;
+    saveVcSession();
     resetCallTimeout();
     return sendUpdateRequest(stepData);
   };
@@ -443,7 +460,7 @@ export const create = (config: Config): VoiceCompass => {
   return {
     updateStep,
     getLastStepId: () => {
-      return previousStepId;
+      return previousStepId || null;
     },
     trackDomAnnotations: () => {
       document.addEventListener("click", handleGlobalClickForAnnotations);
