@@ -1,4 +1,5 @@
-import { type Step, personas } from "./types";
+import { type Step } from "./types";
+import { personas } from "./config";
 
 const baseUrl = "https://dev.journeys.voicecompass.ai/v1";
 

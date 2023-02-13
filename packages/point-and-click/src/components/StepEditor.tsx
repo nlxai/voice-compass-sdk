@@ -81,7 +81,8 @@ export const StepEditor: FC<{
   const currentSelector = useMemo(() => {
     return (
       step.trigger?.selector ??
-      ((step.trigger?.path && toSelector(step.trigger.path)) || "")
+      (step.trigger?.path && toSelector(step.trigger.path)) ??
+      ""
     );
   }, [step.trigger]);
 
