@@ -1,4 +1,5 @@
 import { type Step } from "./types";
+import { personas } from "./config";
 
 const baseUrl = "https://dev.journeys.voicecompass.ai/v1";
 
@@ -50,15 +51,6 @@ export const fetchSteps = async ({
   }
 };
 
-const voiceByLanguage: Record<string, string> = {
-  "en-US": "Matthew",
-  "en-AU": "Olivia",
-  "es-ES": "Lupe",
-  "es-US": "Lupe",
-  "es-419": "Lupe",
-  "pt-BR": "Camila",
-};
-
 const speechSynthesisCache: Record<string, string> = {};
 
 interface SpeechSynthesisProps {
@@ -108,7 +100,9 @@ export const fetchSpeechSynthesis = async (
       },
       body: JSON.stringify({
         text: data.transcript,
-        voice: data.persona || voiceByLanguage[language],
+        persona:
+          data.persona ||
+          personas.find((p) => p.defaultLanguage === language)?.value,
         language,
       }),
     });

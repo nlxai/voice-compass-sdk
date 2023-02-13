@@ -1,6 +1,5 @@
-import { h, type FunctionalComponent as FC } from "preact";
+import { h, type FunctionalComponent as FC, RefObject } from "preact";
 import {
-  useState,
   useMemo,
   useEffect,
   useCallback,
@@ -12,6 +11,7 @@ import { getLinks, toSelector } from "../logic";
 import { TriggerIcon, RemoveCircleOutlineIcon } from "../icons";
 import { LinkEditor } from "./LinkEditor";
 import { MatchCounter } from "./MatchCounter";
+import { SpeechSynthesis } from "./SpeechSynthesis";
 
 const eventOptions: { label: string; value: Event }[] = [
   { value: "click", label: "Click" },
@@ -36,7 +36,11 @@ export const StepEditor: FC<{
   setStep: StateUpdater<Step | null>;
   getParentBound: () => Bounding;
   onBackButtonClick?: () => void;
-}> = ({ step, setStep, onBackButtonClick, getParentBound }) => {
+  apiKey: string;
+  // The token does not need to be reactive as it is set at the beginning and never changes
+  // using a ref here to avoid re-renders.
+  token: RefObject<string>;
+}> = ({ step, setStep, onBackButtonClick, getParentBound, apiKey, token }) => {
   const basedOn = useMemo<"css" | "html">(
     () => (typeof step.trigger?.selector === "string" ? "css" : "html"),
     [step.trigger]
@@ -75,22 +79,20 @@ export const StepEditor: FC<{
   }, []);
 
   const currentSelector = useMemo(() => {
-    return step.trigger?.selector
-      ? step.trigger.selector
-      : (step.trigger?.path && toSelector(step.trigger.path)) || "";
+    return (
+      step.trigger?.selector ??
+      (step.trigger?.path && toSelector(step.trigger.path)) ??
+      ""
+    );
   }, [step.trigger]);
 
   useEffect(() => {
-    const selector = step.trigger?.selector
-      ? step.trigger.selector
-      : step.trigger?.path && toSelector(step.trigger.path);
-
-    if (!selector) {
+    if (!currentSelector) {
       return;
     }
 
     try {
-      const elements = document.querySelectorAll(selector);
+      const elements = document.querySelectorAll(currentSelector);
 
       elements.forEach((element: any) => {
         element.setAttribute("data-vc-active", "true");
@@ -100,11 +102,11 @@ export const StepEditor: FC<{
           element.removeAttribute("data-vc-active");
         });
       };
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.warn(err);
       return;
     }
-  }, [step.trigger]);
+  }, [currentSelector]);
 
   const handleBodyClick = useCallback(
     (ev: any) => {
@@ -171,25 +173,35 @@ export const StepEditor: FC<{
 
   return (
     <div class="space-y-2">
-      <div>
-        {onBackButtonClick && <BackButton onClick={onBackButtonClick} />}
-        <input
-          class="font-medium text-sm py-0.5 focus:outline-blue-300 outline-offset-2"
-          placeholder="Enter name"
-          value={step.name}
-          onInput={(ev: any) => {
-            setStep(
-              (prev) =>
-                prev && {
-                  ...prev,
-                  name: ev.target.value,
-                }
-            );
-          }}
-        >
-          {step.name}
-        </input>
-        <p class="mt-0.5 font-mono text-xs text-gray-500">{step.key}</p>
+      {onBackButtonClick && <BackButton onClick={onBackButtonClick} />}
+      <div class="!mt-1 flex items-center justify-between">
+        <div>
+          <input
+            class="font-medium text-sm py-0.5 focus:outline-blue-300 outline-offset-2"
+            placeholder="Enter name"
+            value={step.name}
+            onInput={(ev: any) => {
+              setStep(
+                (prev) =>
+                  prev && {
+                    ...prev,
+                    name: ev.target.value,
+                  }
+              );
+            }}
+          >
+            {step.name}
+          </input>
+          <p class="mt-0.5 font-mono text-xs text-gray-500">{step.key}</p>
+        </div>
+        {step.body && (
+          <SpeechSynthesis
+            languageCode={/* TODO: handle languages dynamically */ "en-US"}
+            transcript={step.body}
+            apiKey={apiKey}
+            token={token}
+          />
+        )}
       </div>
       <hr />
       <div class="space-y-2">

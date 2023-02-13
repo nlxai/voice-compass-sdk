@@ -16,14 +16,16 @@ export const MatchCounter: FC<{
   }, [selector]);
 
   return (
-    <p
-      class={`text-xs ${
-        numberOfElementsFound === 0 ? "text-amber-500" : "text-gray-400"
-      }`}
-    >
-      {numberOfElementsFound} element
-      {numberOfElementsFound !== 1 && "s"} found for this selector
+    <p class="text-gray-400 text-xs flex items-center space-x-1">
+      <span
+        class={`w-1 h-1 inline-block rounded-full ${
+          numberOfElementsFound === 1 ? "bg-green-500" : "bg-amber-500"
+        }`}
+      ></span>
+      <span>
+        {numberOfElementsFound} element
+        {numberOfElementsFound !== 1 && "s"} found for this selector
+      </span>
     </p>
   );
 };
-

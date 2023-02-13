@@ -30,3 +30,37 @@ export interface Bounding {
   top: number;
   right: number;
 }
+
+export type Persona =
+  | "Victor"
+  | "Ana"
+  | "Sandra"
+  | "Mia"
+  | "Hiroshi"
+  | "Giorgia"
+  | "Charlotte"
+  | "Greta"
+  | "Simon"
+  | "Eve"
+  | "Adrianna";
+
+export type Language =
+  | "de-DE"
+  | "en-AU"
+  | "en-GB"
+  | "en-US"
+  | "es-419"
+  | "es-ES"
+  | "es-US"
+  | "fr-CA"
+  | "fr-FR"
+  | "it-IT"
+  | "ja-JP"
+  | "pt-BR";
+
+export interface PersonaDetails {
+  value: Persona;
+  label: string;
+  defaultLanguage: Language;
+  compatibleLanguages: Language[];
+}

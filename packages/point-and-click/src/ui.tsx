@@ -98,7 +98,7 @@ export const ToggleButton: FC<{
   <button
     class={`rounded-lg px-2 text-xs border transition-colors ${
       isActive
-        ? "text-voiceCompassPurple border-voiceCompassPurple bg-blue-50 text-white cursor-default"
+        ? "text-voiceCompassPurple border-voiceCompassPurple bg-voiceCompassPurple05 text-white cursor-default"
         : "border-transparent bg-gray-100 hover:text-voiceCompassPurple hover:bg-voiceCompassPurple05"
     }`}
     onClick={onClick}
@@ -128,7 +128,7 @@ export const Switch: FC<{
           // Undo the effect of `space-x-2` on the parent since this is technically the first child (input is visually hidden)
           "!ml-0",
           "bg-gray-300",
-          "peer-checked:bg-blue-500 peer-disabled:opacity-50",
+          "peer-checked:bg-voiceCompassPurple peer-disabled:opacity-50",
           "after:w-2 after:h-2 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-3",
         ].join(" ")}
       ></span>

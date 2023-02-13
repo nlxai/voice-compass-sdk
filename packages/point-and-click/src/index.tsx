@@ -133,6 +133,8 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
                     setEditedStepKey(null);
                   }}
                   getParentBound={getParentBound}
+                  apiKey={props.apiKey}
+                  token={token}
                 />
               </div>
             ) : (
@@ -195,13 +197,19 @@ const StepSummary: FC<{
     </button>
     {step.body && (
       <div class="absolute right-2 top-1/2 transform -translate-y-1/2">
-        <SpeechSynthesis transcript={step.body} apiKey={apiKey} token={token} />
+        <SpeechSynthesis
+          languageCode={/* TODO: handle languages dynamically */ "en-US"}
+          transcript={step.body}
+          apiKey={apiKey}
+          token={token}
+        />
       </div>
     )}
   </div>
 );
 
-const Nothing = () => null;
+// Preact component that renders an empty node, used for unmounting
+const Nothing: FC<{}> = () => null;
 
 customElements.define(
   "point-and-click",
@@ -225,7 +233,9 @@ details summary::marker {
 details summary:focus {
   outline: none;
 }
-      ` + String.raw`TAILWIND`;
+      ` +
+        // This uppercase tailwind string is replaced by the tailwind minified output at build-time
+        String.raw`TAILWIND`;
       style.onload = () => {
         this._styleLoaded = true;
         this.render();

@@ -6,6 +6,8 @@ interface Props {
   transcript: string;
   languageCode?: string;
   apiKey: string;
+  // The token does not need to be reactive as it is set at the beginning and never changes
+  // using a ref here to avoid re-renders.
   token: RefObject<string>;
 }
 
