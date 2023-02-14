@@ -92,17 +92,20 @@ export const fetchLiveSteps = ({
 export const create = (config: Config): VoiceCompass => {
   const botId = config.journeyAssistantId;
 
+  const searchParams = new URLSearchParams(window.location.search);
+
+  const token: string = searchParams.get("token") || "";
+
   // Defined using a literal so typos can be avoided during checking
   const mode: "compose" | null =
-    new URLSearchParams(window.location.search).get("mode") === "compose"
-      ? "compose"
-      : null;
+    searchParams.get("mode") === "compose" ? "compose" : null;
 
   if (mode === "compose") {
     setTimeout(() => {
       const pointAndClick: any = document.createElement("point-and-click");
       document.body.appendChild(pointAndClick);
       pointAndClick.apiKey = config.apiKey;
+      pointAndClick.token = token;
     });
   }
 
