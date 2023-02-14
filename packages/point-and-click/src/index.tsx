@@ -1,12 +1,7 @@
-import {
-  h,
-  render,
-  type FunctionalComponent as FC,
-  type RefObject,
-} from "preact";
+import { h, render, type FunctionalComponent as FC } from "preact";
 import { useState, useRef, useEffect } from "preact/hooks";
 import { type Step } from "./types";
-import { fetchSteps, updateSteps, fetchSpeechSynthesis } from "./api";
+import { fetchSteps, updateSteps } from "./api";
 import { useDrag } from "./drag";
 import { AutoFixHighIcon, TriggerIcon } from "./icons";
 import { StepEditor } from "./components/StepEditor";
@@ -15,8 +10,7 @@ import { SpeechSynthesis } from "./components/SpeechSynthesis";
 export { type Step, type Link, type Trigger } from "./types";
 export { toSelector } from "./logic";
 
-const Wizard: FC<{ apiKey: string }> = (props) => {
-  const token = useRef<string>("");
+const Wizard: FC<{ apiKey: string; token: string }> = (props) => {
   const journeyId = useRef<string>("");
   const containerRef = useRef<any>(null);
 
@@ -36,12 +30,11 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
 
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
-    token.current = params.get("token") || "";
     journeyId.current = params.get("journeyId") || "";
 
     fetchSteps({
       journeyId: journeyId.current,
-      token: token.current,
+      token: props.token,
       apiKey: props.apiKey,
     }).then((steps) => {
       if (steps) {
@@ -50,7 +43,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
         setSavedSteps("error");
       }
     });
-  }, [props.apiKey]);
+  }, [props.apiKey, props.token]);
 
   return (
     <div
@@ -77,8 +70,8 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
                     setIsSaving(true);
                     updateSteps({
                       journeyId: journeyId.current,
-                      token: token.current,
                       steps: stepsDraft,
+                      token: props.token,
                       apiKey: props.apiKey,
                     })
                       .then((res) => {
@@ -134,7 +127,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
                   }}
                   getParentBound={getParentBound}
                   apiKey={props.apiKey}
-                  token={token}
+                  token={props.token}
                 />
               </div>
             ) : (
@@ -143,7 +136,7 @@ const Wizard: FC<{ apiKey: string }> = (props) => {
                   key={step.key}
                   step={step}
                   apiKey={props.apiKey}
-                  token={token}
+                  token={props.token}
                   onSelect={() => {
                     setEditedStepKey(step.key);
                   }}
@@ -172,7 +165,7 @@ const StepSummary: FC<{
   step: Step;
   onSelect: () => void;
   apiKey: string;
-  token: RefObject<string>;
+  token: string;
 }> = ({ step, onSelect, apiKey, token }) => (
   <div class="relative">
     <button
@@ -217,6 +210,7 @@ customElements.define(
     container = document.createElement("div");
     root: any;
     _apiKey: string | null = null;
+    _token: string | null = null;
     _styleLoaded: boolean = false;
 
     constructor() {
@@ -249,9 +243,17 @@ details summary:focus {
       this.render();
     }
 
+    set token(val: string) {
+      this._token = val;
+      this.render();
+    }
+
     render() {
-      if (this._apiKey && this._styleLoaded) {
-        this.root = render(<Wizard apiKey={this._apiKey} />, this.container);
+      if (this._apiKey && this._token && this._styleLoaded) {
+        this.root = render(
+          <Wizard token={this._token} apiKey={this._apiKey} />,
+          this.container
+        );
       }
     }
 

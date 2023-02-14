@@ -1,4 +1,4 @@
-import { h, type FunctionalComponent as FC, RefObject } from "preact";
+import { h, type FunctionalComponent as FC } from "preact";
 import {
   useMemo,
   useEffect,
@@ -37,9 +37,7 @@ export const StepEditor: FC<{
   getParentBound: () => Bounding;
   onBackButtonClick?: () => void;
   apiKey: string;
-  // The token does not need to be reactive as it is set at the beginning and never changes
-  // using a ref here to avoid re-renders.
-  token: RefObject<string>;
+  token: string;
 }> = ({ step, setStep, onBackButtonClick, getParentBound, apiKey, token }) => {
   const basedOn = useMemo<"css" | "html">(
     () => (typeof step.trigger?.selector === "string" ? "css" : "html"),

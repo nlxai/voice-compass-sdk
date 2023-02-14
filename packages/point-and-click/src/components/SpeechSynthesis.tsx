@@ -1,4 +1,4 @@
-import { h, type FunctionalComponent as FC, type RefObject } from "preact";
+import { h, type FunctionalComponent as FC } from "preact";
 import { useState } from "preact/hooks";
 import { fetchSpeechSynthesis } from "../api";
 
@@ -6,9 +6,7 @@ interface Props {
   transcript: string;
   languageCode?: string;
   apiKey: string;
-  // The token does not need to be reactive as it is set at the beginning and never changes
-  // using a ref here to avoid re-renders.
-  token: RefObject<string>;
+  token: string;
 }
 
 const Play = () => (
@@ -52,7 +50,7 @@ export const SpeechSynthesis: FC<Props> = (props) => {
       return;
     }
     setState({ type: "fetching" });
-    fetchSpeechSynthesis({ ...props, token: props.token.current || "" })
+    fetchSpeechSynthesis({ ...props, token: props.token })
       .then((audioUrl: string | null) => {
         if (!audioUrl) {
           throw new Error("Invalid audio URL");
