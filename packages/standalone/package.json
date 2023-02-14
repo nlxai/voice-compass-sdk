@@ -1,6 +1,6 @@
 {
   "name": "@nlx-voice-compass/standalone",
-  "version": "2.0.0-alpha.9",
+  "version": "2.0.0-alpha.10",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@nlx-voice-compass/core": "^2.0.0-alpha.9"
+    "@nlx-voice-compass/core": "^2.0.0-alpha.10"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.0.1",
