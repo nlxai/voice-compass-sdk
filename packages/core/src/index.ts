@@ -90,15 +90,17 @@ export const fetchLiveSteps = ({
 };
 
 export const create = (config: Config): VoiceCompass => {
-  const botId = config.journeyAssistantId;
+  const session = retrieveSession(config.contactId);
 
   const searchParams = new URLSearchParams(window.location.search);
 
-  const token: string = searchParams.get("token") || "";
+  const token: string = searchParams.get("token") || session?.token || "";
 
   // Defined using a literal so typos can be avoided during checking
   const mode: "compose" | null =
-    searchParams.get("mode") === "compose" ? "compose" : null;
+    (searchParams.get("mode") || session?.mode) === "compose"
+      ? "compose"
+      : null;
 
   if (mode === "compose") {
     setTimeout(() => {
@@ -108,8 +110,6 @@ export const create = (config: Config): VoiceCompass => {
       pointAndClick.token = token;
     });
   }
-
-  const session = retrieveSession(config.contactId);
 
   const contactId = config.contactId || session?.contactId;
 
@@ -183,7 +183,7 @@ export const create = (config: Config): VoiceCompass => {
       automate: forceAutomate,
       contactId,
       implementation: config.implementation,
-      botId,
+      botId: config.journeyAssistantId,
       journeyId: stepData.journeyId || config.journeyId,
       voice: config.voiceOverride,
       language: config.languageOverride,

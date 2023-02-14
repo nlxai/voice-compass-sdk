@@ -2,6 +2,8 @@ interface SessionData {
   contactId: string;
   journeyId?: string;
   previousStepId?: string;
+  mode?: string;
+  token?: string;
 }
 
 const sessionStorageKey = "voicecompass-session";
