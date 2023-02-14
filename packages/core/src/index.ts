@@ -151,18 +151,22 @@ export const create = (config: Config): VoiceCompass => {
         apiKey: config.apiKey,
         journeyId,
         journeyAssistantId: config.journeyAssistantId,
-      }).then((steps) => {
-        liveSteps[journeyId] = steps;
-        if (mode !== "compose") {
-          steps.forEach((step) => {
-            if (step.trigger?.event === "start") {
-              updateStep({
-                stepId: step.key,
-              });
-            }
-          });
-        }
-      });
+      })
+        .then((steps) => {
+          liveSteps[journeyId] = steps;
+          if (mode !== "compose") {
+            steps.forEach((step) => {
+              if (step.trigger?.event === "start") {
+                updateStep({
+                  stepId: step.key,
+                });
+              }
+            });
+          }
+        })
+        .catch((err) => {
+          console.warn(err);
+        });
     }
   };
 
@@ -482,20 +486,24 @@ export const create = (config: Config): VoiceCompass => {
           apiKey: config.apiKey,
           journeyId: currentJourneyId,
           journeyAssistantId: config.journeyAssistantId,
-        }).then((steps) => {
-          if (currentJourneyId) {
-            liveSteps[currentJourneyId] = steps;
-          }
-          if (mode !== "compose") {
-            steps.forEach((step) => {
-              if (step.trigger?.event === "start") {
-                updateStep({
-                  stepId: step.key,
-                });
-              }
-            });
-          }
-        });
+        })
+          .then((steps) => {
+            if (currentJourneyId) {
+              liveSteps[currentJourneyId] = steps;
+            }
+            if (mode !== "compose") {
+              steps.forEach((step) => {
+                if (step.trigger?.event === "start") {
+                  updateStep({
+                    stepId: step.key,
+                  });
+                }
+              });
+            }
+          })
+          .catch((err) => {
+            console.warn(err);
+          });
       }
       setupMutationObserver();
       document.addEventListener("click", handleGlobalClickForWizard);
