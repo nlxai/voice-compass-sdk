@@ -1,5 +1,5 @@
 interface SessionData {
-  contactId: string;
+  contactId?: string;
   journeyId?: string;
   previousStepId?: string;
   mode?: string;

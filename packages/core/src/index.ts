@@ -134,13 +134,13 @@ export const create = (config: Config): VoiceCompass => {
     session?.journeyId || config.journeyId;
 
   const saveVcSession = () => {
-    if (contactId) {
-      saveSession({
-        contactId,
-        journeyId: currentJourneyId,
-        previousStepId,
-      });
-    }
+    saveSession({
+      contactId,
+      journeyId: currentJourneyId,
+      previousStepId,
+      token,
+      mode: mode || undefined,
+    });
   };
 
   saveVcSession();
