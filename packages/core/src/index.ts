@@ -102,15 +102,6 @@ export const create = (config: Config): VoiceCompass => {
       ? "compose"
       : null;
 
-  if (mode === "compose") {
-    setTimeout(() => {
-      const pointAndClick: any = document.createElement("point-and-click");
-      document.body.appendChild(pointAndClick);
-      pointAndClick.apiKey = config.apiKey;
-      pointAndClick.token = token;
-    });
-  }
-
   const contactId = config.contactId || session?.contactId;
 
   if (!contactId) {
@@ -144,6 +135,16 @@ export const create = (config: Config): VoiceCompass => {
   };
 
   saveVcSession();
+
+  if (mode === "compose") {
+    setTimeout(() => {
+      const pointAndClick: any = document.createElement("point-and-click");
+      document.body.appendChild(pointAndClick);
+      pointAndClick.apiKey = config.apiKey;
+      pointAndClick.token = token;
+      pointAndClick.journeyId = currentJourneyId;
+    });
+  }
 
   const switchJourney = (journeyId: string) => {
     currentJourneyId = journeyId;

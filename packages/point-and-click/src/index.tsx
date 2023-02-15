@@ -10,7 +10,9 @@ import { SpeechSynthesis } from "./components/SpeechSynthesis";
 export { type Step, type Link, type Trigger } from "./types";
 export { toSelector } from "./logic";
 
-const Wizard: FC<{ apiKey: string; token: string }> = (props) => {
+const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
+  props
+) => {
   const journeyId = useRef<string>("");
   const containerRef = useRef<any>(null);
 
@@ -211,6 +213,7 @@ customElements.define(
     root: any;
     _apiKey: string | null = null;
     _token: string | null = null;
+    _journeyId: string | null = null;
     _styleLoaded: boolean = false;
 
     constructor() {
@@ -248,10 +251,19 @@ details summary:focus {
       this.render();
     }
 
+    set journeyId(val: string) {
+      this._journeyId = val;
+      this.render();
+    }
+
     render() {
-      if (this._apiKey && this._token && this._styleLoaded) {
+      if (this._apiKey && this._token && this._journeyId && this._styleLoaded) {
         this.root = render(
-          <Wizard token={this._token} apiKey={this._apiKey} />,
+          <Wizard
+            token={this._token}
+            apiKey={this._apiKey}
+            journeyId={this._journeyId}
+          />,
           this.container
         );
       }
