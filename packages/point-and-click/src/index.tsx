@@ -13,7 +13,6 @@ export { toSelector } from "./logic";
 const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
   props
 ) => {
-  const journeyId = useRef<string>("");
   const containerRef = useRef<any>(null);
 
   const [savedSteps, setSavedSteps] = useState<"loading" | "error" | Step[]>(
@@ -31,11 +30,8 @@ const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
   const getParentBound = () => containerRef?.current?.getBoundingClientRect();
 
   useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    journeyId.current = params.get("journeyId") || "";
-
     fetchSteps({
-      journeyId: journeyId.current,
+      journeyId: props.journeyId,
       token: props.token,
       apiKey: props.apiKey,
     }).then((steps) => {
@@ -45,7 +41,7 @@ const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
         setSavedSteps("error");
       }
     });
-  }, [props.apiKey, props.token]);
+  }, [props.apiKey, props.token, props.journeyId]);
 
   return (
     <div
@@ -71,10 +67,10 @@ const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
                 ? () => {
                     setIsSaving(true);
                     updateSteps({
-                      journeyId: journeyId.current,
                       steps: stepsDraft,
                       token: props.token,
                       apiKey: props.apiKey,
+                      journeyId: props.journeyId,
                     })
                       .then((res) => {
                         setStepsDraft(null);
