@@ -2,77 +2,22 @@
   <script type="module" src="./src/test.ts"></script>
 </head>
 <body>
-  <h1>My App2</h1>
-  <div>
-    <button class="click">click me</button>
-    <button class="click" id="two">click too</button>
-    <div class="red">
-      <ul class="blue">
-        <li class="heh">
-          <div class="again">
-            <div class="more_divs">
-              <div class="repeat">
-                <div>
-                  <div>
-                    <div>
-                      <div>
-                        <article>
-                          <div>
-                            <header>
-                              <article>
-                                <div>
-                                  <footer>
-                                    <div>
-                                      <div>
-                                        <article>
-                                          <article>
-                                            <article>
-                                              <article>
-                                                <article>
-                                                  <article>
-                                                    <article>
-                                                      <button class="click">
-                                                        click third one
-                                                      </button>
-                                                    </article>
-                                                  </article>
-                                                </article>
-                                              </article>
-                                            </article>
-                                          </article>
-                                        </article>
-                                      </div>
-                                    </div>
-                                  </footer>
-                                </div>
-                              </article>
-                            </header>
-                          </div>
-                        </article>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <div id="extra"></div>
+  <header>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </header>
+
+  <h1>Hello</h1>
+  <button id="btn-one">Do something</button>
+  <script>
+    const btn = document.querySelector("#btn-one");
+    btn.addEventListener("click", () => {
+      console.log("clicked");
+      const p = document.createElement("p");
+      p.innerText = "Something";
+      btn.parentNode.insertBefore(p, btn.nextSibling);
+    });
+  </script>
 </body>
 
-<script type="text/javascript">
-  document.querySelectorAll(".click").forEach((elem) =>
-    elem.addEventListener("click", (e) => {
-      // console.log("clicked", e.currentTarget);
-    })
-  );
-
-  document.querySelector("#two").addEventListener("click", (e) => {
-    const newElem = document.createElement("div");
-    newElem.innerHTML = "<p>abcd</p>";
-    document.querySelector("#extra").appendChild(newElem);
-  });
-</script>
+<script type="text/javascript"></script>

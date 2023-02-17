@@ -371,8 +371,9 @@ export const create = (config: Config): VoiceCompass => {
         return;
       }
       const selector =
-        step.trigger.selector ||
-        (step.trigger.path ? toSelector(step.trigger.path) : undefined);
+        step.trigger?.selector ??
+        (step.trigger?.path && toSelector(step.trigger.path)) ??
+        "";
       if (!selector) {
         return;
       }
@@ -495,7 +496,7 @@ export const create = (config: Config): VoiceCompass => {
             if (currentJourneyId) {
               liveSteps[currentJourneyId] = steps;
             }
-            if (mode !== "compose") {
+            if (mode !== "compose" && !previousStepId) {
               steps.forEach((step) => {
                 if (step.trigger?.event === "start") {
                   updateStep({
