@@ -50,7 +50,7 @@ const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
       ref={containerRef}
     >
       <div
-        class="relative z-30 px-2 py-2 border-b border-gray-200 cursor-move sticky top-0 text-base rounded-t-lg flex items-center justify-between"
+        class="relative z-30 bg-white px-2 py-2 border-b border-gray-200 cursor-move sticky top-0 text-base rounded-t-lg flex items-center justify-between"
         onMouseDown={drag.onMouseDown}
       >
         <div class="flex items-center space-x-1.5">
