@@ -45,7 +45,7 @@ const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
 
   return (
     <div
-      class="w-96 max-h-[320px] overflow-auto fixed top-4 left-4 bg-white border border-gray-100 shadow-xl font-system rounded-lg"
+      class="w-96 max-h-[320px] overflow-auto text-gray-900 fixed top-4 left-4 bg-white border border-gray-100 shadow-xl font-system rounded-lg"
       style={`z-index: 100000; transform: translate3d(${drag.position[0]}px, ${drag.position[1]}px, 0)`}
       ref={containerRef}
     >
@@ -179,7 +179,7 @@ const StepSummary: FC<{
       )}
       <div>
         {step.name ? (
-          <h2 class="text-sm font-medium">{step.name}</h2>
+          <h2 class="text-sm font-medium text-gray-900">{step.name}</h2>
         ) : (
           <h2 class="text-sm font-medium text-gray-500">Untitled</h2>
         )}
