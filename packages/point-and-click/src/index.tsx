@@ -34,13 +34,16 @@ const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
       journeyId: props.journeyId,
       token: props.token,
       apiKey: props.apiKey,
-    }).then((steps) => {
-      if (steps) {
+    })
+      .then((steps) => {
+        if (!steps) {
+          throw new Error("");
+        }
         setSavedSteps(steps);
-      } else {
+      })
+      .catch(() => {
         setSavedSteps("error");
-      }
-    });
+      });
   }, [props.apiKey, props.token, props.journeyId]);
 
   return (
