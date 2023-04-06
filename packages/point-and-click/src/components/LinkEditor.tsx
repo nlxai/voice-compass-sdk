@@ -1,5 +1,5 @@
 import { h, type FunctionalComponent as FC } from "preact";
-import { useRef, useState, useCallback, useEffect } from "preact/hooks";
+import { useRef, useState, useEffect } from "preact/hooks";
 import { type Link, type Bounding } from "../types";
 import { Switch } from "../ui";
 

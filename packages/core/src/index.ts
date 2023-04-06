@@ -141,6 +141,7 @@ export const create = (config: Config): VoiceCompass => {
       const pointAndClick: any = document.createElement("point-and-click");
       document.body.appendChild(pointAndClick);
       pointAndClick.apiKey = config.apiKey;
+      pointAndClick.dev = config.dev || false;
       pointAndClick.token = token;
       pointAndClick.journeyId = currentJourneyId;
     });

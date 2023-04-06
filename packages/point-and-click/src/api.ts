@@ -1,20 +1,23 @@
 import { type Step } from "./types";
 import { personas } from "./config";
 
-const baseUrl = "https://dev.journeys.voicecompass.ai/v1";
+const baseUrl = (dev: boolean) =>
+  `https://${dev ? "dev." : ""}journeys.voicecompass.ai/v1`;
 
 export const updateSteps = ({
   journeyId,
   token,
   steps,
   apiKey,
+  dev,
 }: {
   journeyId: string;
   token: string;
   steps: Step[];
   apiKey: string;
+  dev: boolean;
 }): Promise<Step[]> => {
-  return fetch(`${baseUrl}/journeyTriggers/${journeyId}`, {
+  return fetch(`${baseUrl(dev)}/journeyTriggers/${journeyId}`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -31,13 +34,15 @@ export const fetchSteps = async ({
   journeyId,
   token,
   apiKey,
+  dev,
 }: {
   journeyId: string;
   token: string;
   apiKey: string;
+  dev: boolean;
 }): Promise<null | Step[]> => {
   try {
-    const res = await fetch(`${baseUrl}/journeyTriggers/${journeyId}`, {
+    const res = await fetch(`${baseUrl(dev)}/journeyTriggers/${journeyId}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -59,6 +64,7 @@ interface SpeechSynthesisProps {
   languageCode?: string;
   token: string;
   apiKey: string;
+  dev: boolean;
 }
 
 export const getSpeechSynthesisCache = (
@@ -91,7 +97,7 @@ export const fetchSpeechSynthesis = async (
     if (cached) {
       return Promise.resolve(cached);
     }
-    const res = await fetch(`${baseUrl}/speechSynthesis`, {
+    const res = await fetch(`${baseUrl(data.dev)}/speechSynthesis`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${data.token}`,

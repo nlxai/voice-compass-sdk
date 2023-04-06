@@ -7,6 +7,7 @@ interface Props {
   languageCode?: string;
   apiKey: string;
   token: string;
+  dev: boolean;
 }
 
 const Play = () => (
@@ -50,7 +51,7 @@ export const SpeechSynthesis: FC<Props> = (props) => {
       return;
     }
     setState({ type: "fetching" });
-    fetchSpeechSynthesis({ ...props, token: props.token })
+    fetchSpeechSynthesis({ ...props })
       .then((audioUrl: string | null) => {
         if (!audioUrl) {
           throw new Error("Invalid audio URL");

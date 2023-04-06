@@ -10,9 +10,12 @@ import { SpeechSynthesis } from "./components/SpeechSynthesis";
 export { type Step, type Link, type Trigger } from "./types";
 export { toSelector } from "./logic";
 
-const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
-  props
-) => {
+const Wizard: FC<{
+  apiKey: string;
+  token: string;
+  journeyId: string;
+  dev: boolean;
+}> = (props) => {
   const containerRef = useRef<any>(null);
 
   const [savedSteps, setSavedSteps] = useState<"loading" | "error" | Step[]>(
@@ -34,6 +37,7 @@ const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
       journeyId: props.journeyId,
       token: props.token,
       apiKey: props.apiKey,
+      dev: props.dev,
     })
       .then((steps) => {
         if (!steps) {
@@ -74,6 +78,7 @@ const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
                       token: props.token,
                       apiKey: props.apiKey,
                       journeyId: props.journeyId,
+                      dev: props.dev,
                     })
                       .then((res) => {
                         setStepsDraft(null);
@@ -136,6 +141,7 @@ const Wizard: FC<{ apiKey: string; token: string; journeyId: string }> = (
                 <StepSummary
                   key={step.key}
                   step={step}
+                  dev={props.dev}
                   apiKey={props.apiKey}
                   token={props.token}
                   onSelect={() => {
@@ -167,7 +173,8 @@ const StepSummary: FC<{
   onSelect: () => void;
   apiKey: string;
   token: string;
-}> = ({ step, onSelect, apiKey, token }) => (
+  dev: boolean;
+}> = ({ step, onSelect, apiKey, token, dev }) => (
   <div class="relative">
     <button
       class="flex items-center text-left space-x-2 w-full px-2 py-2 cursor-pointer hover:bg-voiceCompassPurple05 transition-colors duration-200"
@@ -196,6 +203,7 @@ const StepSummary: FC<{
           transcript={step.body}
           apiKey={apiKey}
           token={token}
+          dev={dev}
         />
       </div>
     )}
@@ -213,6 +221,7 @@ customElements.define(
     _apiKey: string | null = null;
     _token: string | null = null;
     _journeyId: string | null = null;
+    _dev: boolean | null = null;
     _styleLoaded: boolean = false;
 
     constructor() {
@@ -245,6 +254,11 @@ details summary:focus {
       this.render();
     }
 
+    set dev(val: boolean) {
+      this._dev = val;
+      this.render();
+    }
+
     set token(val: string) {
       this._token = val;
       this.render();
@@ -256,11 +270,18 @@ details summary:focus {
     }
 
     render() {
-      if (this._apiKey && this._token && this._journeyId && this._styleLoaded) {
+      if (
+        this._apiKey &&
+        this._token &&
+        this._journeyId &&
+        typeof this._dev === "boolean" &&
+        this._styleLoaded
+      ) {
         this.root = render(
           <Wizard
             token={this._token}
             apiKey={this._apiKey}
+            dev={this._dev}
             journeyId={this._journeyId}
           />,
           this.container

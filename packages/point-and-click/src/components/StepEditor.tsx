@@ -38,7 +38,8 @@ export const StepEditor: FC<{
   onBackButtonClick?: () => void;
   apiKey: string;
   token: string;
-}> = ({ step, setStep, onBackButtonClick, getParentBound, apiKey, token }) => {
+  dev: boolean;
+}> = ({ step, setStep, onBackButtonClick, getParentBound, apiKey, token, dev }) => {
   const basedOn = useMemo<"css" | "html">(
     () => (typeof step.trigger?.selector === "string" ? "css" : "html"),
     [step.trigger]
@@ -198,6 +199,7 @@ export const StepEditor: FC<{
             transcript={step.body}
             apiKey={apiKey}
             token={token}
+            dev={dev}
           />
         )}
       </div>
