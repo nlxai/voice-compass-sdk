@@ -134,6 +134,7 @@ const Wizard: FC<{
                   getParentBound={getParentBound}
                   apiKey={props.apiKey}
                   token={props.token}
+                  dev={props.dev}
                 />
               </div>
             ) : (
