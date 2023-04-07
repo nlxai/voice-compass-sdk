@@ -10,7 +10,7 @@ import { create } from "./index";
 const contactId = new URLSearchParams(window.location.search).get("cid") || "";
 
 const vc = create({
-  dev: true,
+  dev: false,
   // @ts-ignore
   apiKey: import.meta.env.VITE_VC_DEV_API_KEY,
   contactId,
