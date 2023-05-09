@@ -1,6 +1,6 @@
 import { h, type FunctionalComponent as FC } from "preact";
 import { useState } from "preact/hooks";
-import { fetchSpeechSynthesis } from "../api";
+import { fetchSpeechSynthesis } from "../api.js";
 
 interface Props {
   transcript: string;
