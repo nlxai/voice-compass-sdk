@@ -5,13 +5,13 @@ import {
   useCallback,
   type StateUpdater,
 } from "preact/hooks";
-import { BackButton, RemoveButton, SimpleSelect, ToggleButton } from "../ui";
+import { BackButton, RemoveButton, SimpleSelect, ToggleButton } from "../ui.js";
 import { type Step, type Event, type Bounding, type Trigger } from "../types";
-import { getLinks, toSelector } from "../logic";
-import { TriggerIcon, RemoveCircleOutlineIcon } from "../icons";
-import { LinkEditor } from "./LinkEditor";
-import { MatchCounter } from "./MatchCounter";
-import { SpeechSynthesis } from "./SpeechSynthesis";
+import { getLinks, toSelector } from "../logic.js";
+import { TriggerIcon, RemoveCircleOutlineIcon } from "../icons.js";
+import { LinkEditor } from "./LinkEditor.js";
+import { MatchCounter } from "./MatchCounter.js";
+import { SpeechSynthesis } from "./SpeechSynthesis.js";
 
 const eventOptions: { label: string; value: Event }[] = [
   { value: "click", label: "Click" },

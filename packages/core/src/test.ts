@@ -5,7 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_VC_DEV_JOURNEY_ID: string;
 }
 
-import { create } from "./index";
+import { create } from "./index.js";
 
 const contactId = new URLSearchParams(window.location.search).get("cid") || "";
 
