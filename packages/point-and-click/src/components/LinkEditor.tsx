@@ -1,7 +1,7 @@
 import { h, type FunctionalComponent as FC } from "preact";
 import { useRef, useState, useEffect } from "preact/hooks";
 import { type Link, type Bounding } from "../types";
-import { Switch } from "../ui.js";
+import { Switch } from "../ui";
 
 export const LinkEditor: FC<{
   value: Link;

@@ -1,13 +1,13 @@
 // The point-and-click prototype is not used yet
 import { toSelector, type Trigger } from "@nlx-voice-compass/point-and-click";
-import { saveSession, retrieveSession } from "./session.js";
+import { saveSession, retrieveSession } from "./session";
 import { type StepData } from "./types";
 import {
   isDomElement,
   isInputElement,
   inputValidationError,
   readVcAttributes,
-} from "./dom.js";
+} from "./dom";
 
 // Initial configuration used when creating a journey manager
 interface Config {

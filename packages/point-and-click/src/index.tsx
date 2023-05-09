@@ -1,14 +1,14 @@
 import { h, render, type FunctionalComponent as FC } from "preact";
 import { useState, useRef, useEffect } from "preact/hooks";
 import { type Step } from "./types";
-import { fetchSteps, updateSteps } from "./api.js";
-import { useDrag } from "./drag.js";
-import { AutoFixHighIcon, TriggerIcon } from "./icons.js";
-import { StepEditor } from "./components/StepEditor.js";
-import { SpeechSynthesis } from "./components/SpeechSynthesis.js";
+import { fetchSteps, updateSteps } from "./api";
+import { useDrag } from "./drag";
+import { AutoFixHighIcon, TriggerIcon } from "./icons";
+import { StepEditor } from "./components/StepEditor";
+import { SpeechSynthesis } from "./components/SpeechSynthesis";
 
 export { type Step, type Link, type Trigger } from "./types";
-export { toSelector } from "./logic.js";
+export { toSelector } from "./logic";
 
 const Wizard: FC<{
   apiKey: string;
