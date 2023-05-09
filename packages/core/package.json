@@ -1,6 +1,6 @@
 {
   "name": "@nlx-voice-compass/core",
-  "version": "2.0.0-beta.6",
+  "version": "2.0.0-beta.7",
   "description": "Core Voice Compass SDK",
   "type": "module",
   "module": "lib/index.js",
@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@nlx-voice-compass/point-and-click": "^2.0.0-beta.6"
+    "@nlx-voice-compass/point-and-click": "^2.0.0-beta.7"
   },
   "devDependencies": {
     "typescript": "^4.9.0",
