@@ -20,4 +20,4 @@ const vc = create({
   journeyAssistantId: import.meta.env.VITE_VC_DEV_JOURNEY_ASSISTANT_ID,
 });
 
-vc.runWizard();
+vc.trackDomAnnotations();

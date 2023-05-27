@@ -17,7 +17,9 @@ export const isInputElement = (node: any): node is HTMLInputElement => {
   return node instanceof HTMLInputElement;
 };
 
-export const inputValidationError = (inputNode: HTMLInputElement): null | string => {
+export const inputValidationError = (
+  inputNode: HTMLInputElement
+): null | string => {
   const value = inputNode.value;
   const type = inputNode.type;
   if (type === "email") {
@@ -46,19 +48,10 @@ export const readVcAttributes = (
   return {
     stepId,
     journeyId: node.getAttribute(`vc-${eventType}-journeyid`) || undefined,
-    forceEscalate:
-      node.hasAttribute(`vc-${eventType}-force-escalate`) ||
-      // Deprecated
-      node.hasAttribute(`vc-${eventType}-escalate`),
-    forceEnd:
-      node.hasAttribute(`vc-${eventType}-force-end`) ||
-      // Deprecated
-      node.hasAttribute(`vc-${eventType}-end`),
-    forceAutomate:
-      node.hasAttribute(`vc-${eventType}-force-automate`) ||
-      // Deprecated
-      node.hasAttribute(`vc-${eventType}-automate`),
-    bidirectional: node.hasAttribute(`vc-${eventType}-bidirectional`),
+    forceEscalate: node.hasAttribute(`vc-${eventType}-force-escalate`) || undefined,
+    forceEnd: node.hasAttribute(`vc-${eventType}-force-end`) || undefined,
+    forceAutomate: node.hasAttribute(`vc-${eventType}-force-automate`) || undefined,
+    bidirectional: node.hasAttribute(`vc-${eventType}-bidirectional`) || undefined,
     payload: safeJsonParse(node.getAttribute(`vc-${eventType}-payload`)) || {},
   };
 };

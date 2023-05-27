@@ -319,7 +319,7 @@ export const create = (config: Config): VoiceCompass => {
           });
         }
       }
-      node = node.parent;
+      node = node.parentNode;
     }
   };
 
@@ -338,7 +338,7 @@ export const create = (config: Config): VoiceCompass => {
           }
         }
       }
-      node = node.parent;
+      node = node.parentNode;
     }
   };
 
@@ -357,7 +357,7 @@ export const create = (config: Config): VoiceCompass => {
           }
         }
       }
-      node = node.parent;
+      node = node.parentNode;
     }
   };
 
